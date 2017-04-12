@@ -14,7 +14,7 @@ public final class Math64 {
     private final static long DEC64_EXPONENT_MASK = 0xFFL;
     private final static long DEC64_COEFFICIENT_MASK = 0xFFFFFFFFFFFFFF00L;
 
-    private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0xFF00_0000_0000_0000L;
+    private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
 
 //#define DEC64_TRUE          (0x380LL)
 //#define DEC64_FALSE         (0x280LL)
@@ -26,7 +26,12 @@ public final class Math64 {
         return number | DEC64_EXPONENT_MASK;
     }
 
-    public static @DEC64 long of(long coefficient, long exponent) {
+    public static boolean overflow(long number) {
+        return (number & DEC64_COEFFICIENT_OVERFLOW_MASK) != 0;
+    }
+
+    public static @DEC64
+    long of(long coefficient, long exponent) {
         if (exponent > 127 || exponent < -127) {
             throw new IllegalArgumentException("Exponent out of range: " + exponent);
         }
@@ -34,8 +39,15 @@ public final class Math64 {
     }
 
     public static @DEC64
-    long of(long coefficient, byte exponent) {
-        return (coefficient << 8) | exponent;
+    long of(long coeff, byte exponent) {
+        if (overflow(coeff))
+            return salvage(coeff, exponent);
+        return (coeff << 8) | exponent;
+    }
+
+    public static @DEC64
+    long reduceExponent(@DEC64 long number) {
+        return of(10 * coefficient(number), exponent(number) - 1);
     }
 
     public static boolean isNaN(@DEC64 long number) {
@@ -50,6 +62,80 @@ public final class Math64 {
         return coefficient(number) == DEC64_ZERO;
     }
 
+    private static long salvage(long coeff, long expa) {
+        // FIXME: Could maybe save this by losing precision
+        return DEC64_NAN;
+    }
+
+    public static @DEC64
+    long add(@DEC64 long a, @DEC64 long b) {
+        if (isNaN(a) || isNaN(b))
+            return DEC64_NAN;
+        long expa = exponent(a);
+        long expb = exponent(b);
+        if (expa == expb) {
+            long coeff = coefficient(a) + coefficient(b);
+            return of(coeff, expa);
+        }
+
+        // Slow path - first reduceExponent the smaller exponent
+        if (expa > expb) {
+            @DEC64 long lastA = a;
+            while (!isNaN(a)) {
+                lastA = a;
+                a = reduceExponent(a);
+                if (exponent(a) == expb) {
+                    long coeff = coefficient(a) + coefficient(b);
+                    return of(coeff, expb);
+                }
+            }
+            // Have tried & failed to match by reducing a's exponent.
+            // Now we must try to inflate b's exponent to match
+            a = lastA;
+        } else {
+
+        }
+
+        return 0;
+    }
+
+    public static @DEC64
+    long subtract(@DEC64 long a, @DEC64 long b) {
+        if (isNaN(a) || isNaN(b))
+            return DEC64_NAN;
+        if (exponent(a) == exponent(b)) {
+            long coeff = coefficient(a) - coefficient(b);
+            if (overflow(coeff))
+                return DEC64_NAN;
+            return of(coeff, exponent(a));
+        }
+
+        return 0;
+    }/* difference */
+
+
+    public static @DEC64
+    long multiply(@DEC64 long a, @DEC64 long b) {
+        if (isNaN(a) || isNaN(b))
+            return DEC64_NAN;
+        final long coeff = coefficient(a) * coefficient(b);
+        if (overflow(coeff))
+            return DEC64_NAN;
+        return of(coeff, exponent(a) + exponent(b));
+    }
+
+    public static @DEC64
+    long divide(@DEC64 long a, @DEC64 long b) {
+        if (isNaN(a) || isNaN(b))
+            return DEC64_NAN;
+        if (coefficient(b) == 0)
+            return DEC64_NAN;
+        // FIXME
+
+        return 0;
+    }/* quotient */
+
+
     public static long less(@DEC64 long comparahend, @DEC64 long comparator) {
         return 0;
     }/* comparison */
@@ -62,12 +148,6 @@ public final class Math64 {
 
 
     public static @DEC64
-    long add(@DEC64 long augend, @DEC64 long addend) {
-        return 0;
-    }/* sum */
-
-
-    public static @DEC64
     long ceiling(@DEC64 long number) {
         return 0;
     }/* integer */
@@ -77,16 +157,6 @@ public final class Math64 {
     long dec(@DEC64 long minuend) {
         return 0;
     }/* decrementation */
-
-
-    public static @DEC64
-    long divide(@DEC64 long dividend, @DEC64 long divisor) {
-        if (coefficient(divisor) == 0)
-            return DEC64_NAN;
-        // FIXME
-
-        return 0;
-    }/* quotient */
 
 
     public static @DEC64
@@ -129,25 +199,11 @@ public final class Math64 {
 
 
     public static @DEC64
-    long multiply(@DEC64 long a, @DEC64 long b) {
-        final long coeff = coefficient(a) * coefficient(b);
-        if ((coeff | DEC64_COEFFICIENT_OVERFLOW_MASK) != 0)
-            return DEC64_NAN;
-        return of(coeff, exponent(a) + exponent(b));
-    }
-
-    public static @DEC64
     long neg(@DEC64 long number) {
         return of(-coefficient(number), exponent(number));
     }
 
-    public static @DEC64
-    long subtract(@DEC64 long minuend, @DEC64 long subtrahend) {
-        return 0;
-    }/* difference */
-
     ////////////////////////////////////////////////////////
-
     public static long normal(long number) {
         return 0;
     }/* normalization */
@@ -166,6 +222,5 @@ public final class Math64 {
     public static long signum(long number) {
         return 0;
     }/* signature */
-
 
 }

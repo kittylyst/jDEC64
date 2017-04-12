@@ -4,7 +4,25 @@ package dec64;
  *
  * @author ben
  */
-public class String64 {
+public final class String64 {
+
+    private @DEC64
+    long valid;
+    private @DEC64
+    long number;
+    private String data;
+    private int[] digits;
+    private int length;
+    private int nr_digits;
+    private int nr_zeros;
+    private int places;
+    private int separation;
+    private Mode mode;
+    private char decimal_point;
+    private char separator;
+
+    private String64() {
+    }
 
     public enum Mode {
 
@@ -13,25 +31,12 @@ public class String64 {
         standard_mode
     };
 
-    public static class dec64_string_state {
-        /*
-         For internal use only.
-         */
-
-        @DEC64
-        long valid;
-        @DEC64
-        long number;
-        String data;
-        int[] digits;
-        int length;
-        int nr_digits;
-        int nr_zeros;
-        int places;
-        int separation;
-        Mode mode;
-        char decimal_point;
-        char separator;
+    public static String64 of() {
+        return new String64();
     }
 
+    public static @DEC64
+    long toDEC64(final String s) {
+        return Math64.DEC64_ZERO;
+    }
 }
