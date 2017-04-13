@@ -85,4 +85,21 @@ public class SimpleTest {
         }
     }
 
+    @Test
+    public void simpleFormatSTD() {
+        String s = FormatMode.STANDARD.format(DEC64_ZERO);
+        assertEquals("0", s);
+        s = FormatMode.STANDARD.format(DEC64_ONE);
+        assertEquals("1", s);
+        s = FormatMode.STANDARD.format(DEC64_NEGATIVE_ONE);
+        assertEquals("-1", s);
+        s = FormatMode.STANDARD.format(DEC64_POINT_ONE);
+        assertEquals("0.1", s);
+        s = FormatMode.STANDARD.format(DEC64_TWO);
+        assertEquals("2", s);
+        s = FormatMode.STANDARD.format(DEC64_HALF);
+        assertEquals("0.5", s);
+
+    }
+
 }

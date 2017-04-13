@@ -16,19 +16,12 @@ public final class Format64 {
     private int nr_zeros;
     private int places;
     private int separation;
-    private Mode mode;
+//    private Mode mode;
     private char decimal_point;
     private char separator;
 
     private Format64() {
     }
-
-    public enum Mode {
-
-        engineering_mode,
-        scientific_mode,
-        standard_mode
-    };
 
     public static Format64 of() {
         return new Format64();

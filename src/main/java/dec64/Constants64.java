@@ -6,9 +6,9 @@ package dec64;
  */
 public class Constants64 {
 
-    public static final long TWO = 0x200L;
-    public static final long E = 0x6092A113D8D574F0L;
-    public static final long HALF = 0x5FFL;
+    public static final long DEC64_TWO = 0x200L;
+    public static final long DEC64_E = 0x6092A113D8D574F0L;
+    public static final long DEC64_HALF = 0x5FFL;
     public static final long HALF_PI = 0x37CE4F32BB21A6F0L;
     public static final long NHALF_PI = 0xC831B0CD44DE59F0L;
     public static final long NPI = 0x9063619A89BCB4F0L;
