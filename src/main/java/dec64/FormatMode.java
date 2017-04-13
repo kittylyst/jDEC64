@@ -37,11 +37,26 @@ public enum FormatMode {
                             sb.append('0');
                         }
                     } else {
-                        sb.append("0.");
-                        while (++exp < 0) {
-                            sb.append('0');
+                        char[] digits = (""+ coeff).toCharArray();
+                        int expp = Math.abs(exp);
+                        if (expp == digits.length) {
+                            sb.append("0.");
+                            sb.append(coeff);
+                        } else if (expp < digits.length) {
+                            for (int z=0; z< digits.length - expp; z++) {
+                                sb.append(digits[z]);
+                            }
+                            sb.append('.');
+                            for (int z=digits.length - expp; z< digits.length; z++) {
+                                sb.append(digits[z]);
+                            }
+                        } else {
+                            sb.append("0.");
+                            for (int z=0; z< expp - digits.length; z++) {
+                                sb.append('0');
+                            }
+                            sb.append(coeff);
                         }
-                        sb.append(coeff);
                     }
 
                     return sb.toString();
