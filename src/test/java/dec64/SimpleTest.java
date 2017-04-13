@@ -3,6 +3,7 @@ package dec64;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static dec64.Math64.*;
+import static dec64.Constants64.*;
 
 /**
  *
@@ -32,10 +33,13 @@ public class SimpleTest {
         @DEC64 long ten = of(10, (byte) 0);
         assertTrue("0.1 * 1 should equal 1", equals64(DEC64_ONE, multiply(ten, DEC64_POINT_ONE)));
         @DEC64 long two = of(2, (byte) 0);
-        @DEC64 long three = of(30, (byte)-1);
+        @DEC64 long three = of(30, (byte) -1);
         @DEC64 long four = of(4, (byte) 0);
-        @DEC64 long six = of(600, (byte)-2);
+        @DEC64 long six = of(600, (byte) -2);
         assertTrue("3 * 4 should equal 2 * 6", equals64(multiply(three, four), multiply(two, six)));
+        assertTrue("4 * 3 should equal 2 * 6", equals64(multiply(four, three), multiply(two, six)));
+        assertTrue("3 * 4 should equal 6 * 2", equals64(multiply(three, four), multiply(six, two)));
+        assertTrue("4 * 3 should equal 6 * 2", equals64(multiply(four, three), multiply(six, two)));
     }
 
     @Test
@@ -70,6 +74,15 @@ public class SimpleTest {
         assertTrue("1 should equal 1", equals64(51_200_000_000_000_242L, 512));
         assertTrue("1 should equal 1", equals64(512, 512_000_000_000_000_241L)); // 57
         assertTrue("1 should equal 1", equals64(512_000_000_000_000_241L, 512));
-        
     }
+
+    @Test
+    public void simpleFactorial() {
+        long current = of(1, 0);
+        for (int i = 2; i < FACTORIAL.length; i++) {
+            current = multiply(of(i, 0), current);
+            assertTrue(i + "! value incorrect", equals64(FACTORIAL[i], current));
+        }
+    }
+
 }

@@ -33,17 +33,20 @@ public final class Math64 {
     }
 
     public static @DEC64
-    long of(long coefficient, long exponent) {
+    long of(long coeff, long exponent) {
         if (exponent > 127 || exponent < -127) {
-            return DEC64_NAN;
+            if (overflow(coeff))
+                return salvageBoth(coeff, exponent);
+            else
+                return salvageExp(coeff, exponent);
         }
-        return of(coefficient, (byte) exponent);
+        return of(coeff, (byte) exponent);
     }
 
     public static @DEC64
     long of(long coeff, byte exponent) {
         if (overflow(coeff))
-            return salvage(coeff, exponent);
+            return salvageCoeff(coeff, exponent);
         return (coeff << 8) | (DEC64_EXPONENT_MASK & (long) exponent);
     }
 
@@ -64,8 +67,27 @@ public final class Math64 {
         return coefficient(number) == DEC64_ZERO;
     }
 
-    private static long salvage(long coeff, long expa) {
-        // FIXME: Could maybe save this by losing precision
+    static long salvageCoeff(long coeff, byte expa) {
+        return DEC64_NAN;
+    }
+
+    static long salvageExp(long coeff, long expa) {
+        if (expa > 127) {
+            long tmpc = coeff;
+            long places = expa - 127;
+            for (int i = 0; i < places; i++) {
+                tmpc *= 10;
+                if (overflow(tmpc << 8))
+                    return DEC64_NAN;
+            }
+            return of(tmpc, 127);
+        }
+
+        return DEC64_NAN;
+    }
+
+    static long salvageBoth(long coeff, long expa) {
+        // FIXME Is this worth it?
         return DEC64_NAN;
     }
 
