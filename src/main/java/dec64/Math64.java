@@ -9,7 +9,7 @@ public final class Math64 {
     public final static long DEC64_NAN = 0x80L;
     public final static long DEC64_ZERO = 0x00L;
     public final static long DEC64_ONE = 0x100L;
-    
+
     public final static long DEC64_NEGATIVE_ONE = 0xFFFFFFFFFFFFFF00L;
     public final static long DEC64_POINT_ONE = 0x1FFL;
 
@@ -25,31 +25,31 @@ public final class Math64 {
     }
 
     public static byte exponent(@DEC64 long number) {
-        return (byte)(number & DEC64_EXPONENT_MASK);
+        return (byte) (number & DEC64_EXPONENT_MASK);
     }
 
     public static boolean overflow(long number) {
         return (number & DEC64_COEFFICIENT_OVERFLOW_MASK) != 0;
     }
 
-//    public static @DEC64
-//    long of(long coefficient, long exponent) {
-//        if (exponent > 127 || exponent < -127) {
-//            throw new IllegalArgumentException("Exponent out of range: " + exponent);
-//        }
-//        return of(coefficient, (byte) exponent);
-//    }
+    public static @DEC64
+    long of(long coefficient, long exponent) {
+        if (exponent > 127 || exponent < -127) {
+            return DEC64_NAN;
+        }
+        return of(coefficient, (byte) exponent);
+    }
 
     public static @DEC64
     long of(long coeff, byte exponent) {
         if (overflow(coeff))
             return salvage(coeff, exponent);
-        return (coeff << 8) | exponent;
+        return (coeff << 8) | (DEC64_EXPONENT_MASK & (long) exponent);
     }
 
     public static @DEC64
     long reduceExponent(@DEC64 long number) {
-        return of(10 * coefficient(number), (byte)(exponent(number) - 1));
+        return of(10 * coefficient(number), (byte) (exponent(number) - 1));
     }
 
     public static boolean isNaN(@DEC64 long number) {
@@ -70,9 +70,36 @@ public final class Math64 {
     }
 
     public static boolean equals(@DEC64 long a, @DEC64 long b) {
+        byte expa = exponent(a);
+        byte expb = exponent(b);
+        if (expa == expb) {
+            return coefficient(a) == coefficient(b);
+        }
+
+        // Slow path - first reduceExponent the smaller exponent
+        if (expa > expb) {
+            @DEC64 long lastA = a;
+            while (!isNaN(a)) {
+                lastA = a;
+                a = reduceExponent(a);
+                if (exponent(a) == expb) {
+                    return coefficient(a) == coefficient(b);
+                }
+            }
+        } else {
+            @DEC64 long lastB = b;
+            while (!isNaN(b)) {
+                lastB = b;
+                b = reduceExponent(b);
+                if (exponent(b) == expa) {
+                    return coefficient(a) == coefficient(b);
+                }
+            }
+        }
+
         return false;
     }
-    
+
     public static @DEC64
     long add(@DEC64 long a, @DEC64 long b) {
         if (isNaN(a) || isNaN(b))
@@ -127,7 +154,7 @@ public final class Math64 {
         final long coeff = coefficient(a) * coefficient(b);
         if (overflow(coeff))
             return DEC64_NAN;
-        return of(coeff, (byte)(exponent(a) + exponent(b)));
+        return of(coeff, (byte) (exponent(a) + exponent(b)));
     }
 
     public static @DEC64
