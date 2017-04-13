@@ -69,14 +69,14 @@ public final class Math64 {
         return DEC64_NAN;
     }
 
-    public static boolean equals(@DEC64 long a, @DEC64 long b) {
+    public static boolean equals64(@DEC64 long a, @DEC64 long b) {
         byte expa = exponent(a);
         byte expb = exponent(b);
         if (expa == expb) {
             return coefficient(a) == coefficient(b);
         }
 
-        // Slow path - first reduceExponent the smaller exponent
+        // Slow path - first reduce the smaller exponent
         if (expa > expb) {
             @DEC64 long lastA = a;
             while (!isNaN(a)) {
@@ -126,6 +126,15 @@ public final class Math64 {
             // Now we must try to inflate b's exponent to match
             a = lastA;
         } else {
+            @DEC64 long lastB = b;
+            while (!isNaN(b)) {
+                lastB = b;
+                b = reduceExponent(b);
+                if (exponent(b) == expa) {
+                    long coeff = coefficient(a) + coefficient(b);
+                    return of(coeff, expa);
+                }
+            }
 
         }
 
