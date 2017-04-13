@@ -29,7 +29,7 @@ public final class Format64 {
 
     public static @DEC64
     long toDEC64(final String s) {
-        return Math64.DEC64_ZERO;
+        return Basic64.DEC64_ZERO;
     }
 
 }

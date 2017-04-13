@@ -9,11 +9,11 @@ public class Constants64 {
     public static final long DEC64_TWO = 0x200L;
     public static final long DEC64_E = 0x6092A113D8D574F0L;
     public static final long DEC64_HALF = 0x5FFL;
-    public static final long HALF_PI = 0x37CE4F32BB21A6F0L;
-    public static final long NHALF_PI = 0xC831B0CD44DE59F0L;
-    public static final long NPI = 0x9063619A89BCB4F0L;
-    public static final long PI = 0x6F9C9E6576434CF0L;
-    public static final long TWO_PI = 0x165286144ADA42F1L;
+    public static final long DEC64_HALF_PI = 0x37CE4F32BB21A6F0L;
+    public static final long DEC64_NHALF_PI = 0xC831B0CD44DE59F0L;
+    public static final long DEC64_NPI = 0x9063619A89BCB4F0L;
+    public static final long DEC64_PI = 0x6F9C9E6576434CF0L;
+    public static final long DEC64_TWO_PI = 0x165286144ADA42F1L;
 
     public static final long[] FACTORIAL = {
         (1L << 8) + 0,

@@ -4,7 +4,7 @@ package dec64;
  *
  * @author ben
  */
-public final class Math64 {
+public final class Basic64 {
 
     public final static long DEC64_NAN = 0x80L;
     public final static long DEC64_ZERO = 0x00L;
@@ -18,8 +18,11 @@ public final class Math64 {
 
     private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
 
-//#define DEC64_TRUE          (0x380LL)
-//#define DEC64_FALSE         (0x280LL)
+    /**
+     *
+     * @param number
+     * @return 
+     */
     public static long coefficient(@DEC64 long number) {
         return number > 0 ? number >> 8 : -(-number >> 8);
     }
@@ -175,8 +178,7 @@ public final class Math64 {
         }
 
         return 0;
-    }/* difference */
-
+    }
 
     public static @DEC64
     long multiply(@DEC64 long a, @DEC64 long b) {
@@ -194,11 +196,26 @@ public final class Math64 {
             return DEC64_NAN;
         if (coefficient(b) == 0)
             return DEC64_NAN;
-        // FIXME
 
-        return 0;
-    }/* quotient */
+        byte expa = exponent(a);
+        byte expb = exponent(b);
 
+        if (expa == expb) {
+            return divideEven(a, b);
+        }
+        long outMult = of(1, exponent(a) - exponent(b));
+
+        return multiply(divideEven(a, b), outMult);
+    }
+
+    static @DEC64
+    long divideEven(@DEC64 long a, @DEC64 long b) {
+        final long exp = exponent(a);
+        long coeffa = coefficient(a);
+        long coeffb = coefficient(b);
+
+        return DEC64_NAN;
+    }
 
     public static long less(@DEC64 long comparahend, @DEC64 long comparator) {
         return 0;

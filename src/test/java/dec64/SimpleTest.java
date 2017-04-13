@@ -2,7 +2,7 @@ package dec64;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import static dec64.Math64.*;
+import static dec64.Basic64.*;
 import static dec64.Constants64.*;
 import org.junit.Ignore;
 

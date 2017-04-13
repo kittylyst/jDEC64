@@ -1,6 +1,6 @@
 package dec64;
 
-import static dec64.Math64.*;
+import static dec64.Basic64.*;
 
 /**
  *
