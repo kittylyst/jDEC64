@@ -6,17 +6,22 @@ package dec64;
  */
 public final class Basic64 {
 
-    public final static long DEC64_NAN = 0x80L;
-    public final static long DEC64_ZERO = 0x00L;
-    public final static long DEC64_ONE = 0x100L;
+    public final static @DEC64 long DEC64_NAN = 0x80L;
+    public final static @DEC64 long DEC64_ZERO = 0x00L;
+    public final static @DEC64 long DEC64_ONE = 0x100L;
 
-    public final static long DEC64_NEGATIVE_ONE = 0xFFFFFFFFFFFFFF00L;
-    public final static long DEC64_POINT_ONE = 0x1FFL;
+    public final static @DEC64 long DEC64_NEGATIVE_ONE = 0xffff_ffff_ffff_ff00L;
+    public final static @DEC64 long DEC64_POINT_ONE = 0x1FFL;
+
+    // Max and min coefficients - not DEC64 values
+    public final static long MAX_DEC64 = 0x7f_ffff_ffff_ffffL; // 36028797018963967L
+    public final static long MIN_DEC64 = 0xff_ffff_ffff_ffffL;
 
     private final static long DEC64_EXPONENT_MASK = 0xFFL;
-    private final static long DEC64_COEFFICIENT_MASK = 0xFFFFFFFFFFFFFF00L;
+    private final static long DEC64_COEFFICIENT_MASK = 0xffff_ffff_ffff_ff00L;
 
     private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
+    private final static long MAX_PROMOTABLE = 3602879701896396L;
 
     /**
      *
@@ -29,6 +34,10 @@ public final class Basic64 {
 
     public static byte exponent(@DEC64 long number) {
         return (byte) (number & DEC64_EXPONENT_MASK);
+    }
+
+    public static long exponentAsLong(byte exp) {
+        return ((long)exp & DEC64_EXPONENT_MASK);
     }
 
     public static boolean overflow(long number) {
@@ -56,6 +65,31 @@ public final class Basic64 {
     public static @DEC64
     long reduceExponent(@DEC64 long number) {
         return of(10 * coefficient(number), (byte) (exponent(number) - 1));
+    }
+
+    public static @DEC64
+    long canonical(@DEC64 long number) {
+        if (isNaN(number))
+            return DEC64_NAN;
+        byte exp = exponent(number);
+        if (exp == 127 || exp == 0)
+            return number;
+
+        long out = number;
+        long coeff = coefficient(number);
+        if (exp > 0) {
+            while (exp > 0 && coeff < MAX_PROMOTABLE) {
+                out = of(10 * coeff, --exp);
+                coeff = coefficient(out);
+            }
+        } else {
+            while (exp < 0 && coeff % 10 == 0) {
+                out = of(coeff / 10L, ++exp);
+                coeff = coefficient(out);
+            }
+        }
+
+        return out;
     }
 
     public static boolean isNaN(@DEC64 long number) {

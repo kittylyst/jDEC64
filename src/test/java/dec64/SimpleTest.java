@@ -45,6 +45,8 @@ public class SimpleTest {
 
     @Test
     public void simpleEquals() {
+        // This test case only exists for demonstration purposes for newcomers
+        // to working witht the DEC64 format
         assertTrue("1 should equal 1", equals64(256, 2815));
         assertTrue("1 should equal 1", equals64(2815, 256));
         assertTrue("1 should equal 1", equals64(256, 25854));
@@ -57,24 +59,22 @@ public class SimpleTest {
         assertTrue("2 should equal 2", equals64(51200251, 512));
         assertTrue("2 should equal 2", equals64(512, 512_000_250));
         assertTrue("2 should equal 2", equals64(512_000_250, 512));
-        assertTrue("2 should equal 2", equals64(512, 5_120_000_249L)); // 33
-        assertTrue("2 should equal 2", equals64(5_120_000_249L, 512));
-        assertTrue("2 should equal 2", equals64(512, 51_200_000_248L)); // 36
-        assertTrue("2 should equal 2", equals64(51_200_000_248L, 512));
-        assertTrue("2 should equal 2", equals64(512, 512_000_000_247L)); // 39
-        assertTrue("2 should equal 2", equals64(512_000_000_247L, 512));
-        assertTrue("2 should equal 2", equals64(512, 5_120_000_000_246L)); // 42
-        assertTrue("2 should equal 2", equals64(5_120_000_000_246L, 512));
-        assertTrue("2 should equal 2", equals64(512, 51_200_000_000_245L)); // 45
-        assertTrue("2 should equal 2", equals64(51_200_000_000_245L, 512));
-        assertTrue("2 should equal 2", equals64(512, 512_000_000_000_244L)); // 48
-        assertTrue("2 should equal 2", equals64(512_000_000_000_244L, 512));
-        assertTrue("2 should equal 2", equals64(512, 5_120_000_000_000_243L)); // 51
-        assertTrue("2 should equal 2", equals64(5_120_000_000_000_243L, 512));
-        assertTrue("2 should equal 2", equals64(512, 51_200_000_000_000_242L)); // 54
-        assertTrue("2 should equal 2", equals64(51_200_000_000_000_242L, 512));
-        assertTrue("2 should equal 2", equals64(512, 512_000_000_000_000_241L)); // 57
-        assertTrue("2 should equal 2", equals64(512_000_000_000_000_241L, 512));
+    }
+
+    @Test
+    public void genEquals() {
+        @DEC64 long last = 256;
+        byte exp = 0;
+        for (int i = 0; i < 16; i++) {
+            last *= 10;
+            exp--;
+            @DEC64 long check = last + exponentAsLong(exp);
+            assertTrue("1_" + (-exp) + "(" + last + " + " + exp + ") should equal 1CL but is: " + check, equals64(DEC64_ONE, check));
+            assertTrue("1_" + (-exp) + " should equal 1CL but is: " + check, equals64(check, DEC64_ONE));
+            
+            @DEC64 long canonical = canonical(check);
+            assertTrue(canonical + "(" + last + " + " + exp + ") should equal 1CL ("+ DEC64_ONE +") but is: " + canonical, DEC64_ONE == canonical);
+        }
     }
 
     @Test
@@ -84,6 +84,7 @@ public class SimpleTest {
             current = multiply(of(i, 0), current);
             assertTrue(i + "! value incorrect", equals64(FACTORIAL[i], current));
         }
+        assertEquals(3602879701896396L, MAX_DEC64 / 10L);
     }
 
     @Test
