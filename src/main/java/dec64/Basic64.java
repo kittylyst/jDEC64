@@ -21,10 +21,12 @@ public final class Basic64 {
     private final static long DEC64_COEFFICIENT_MASK = 0xffff_ffff_ffff_ff00L;
 
     private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
-    private final static long MAX_PROMOTABLE = 3602879701896396L;
+    final static long MAX_PROMOTABLE = 3602879701896396L;
+    private final static byte MAX_DIGITS = 17;
 
-    private Basic64() {}
-    
+    private Basic64() {
+    }
+
     /**
      *
      * @param number
@@ -39,7 +41,7 @@ public final class Basic64 {
     }
 
     public static long exponentAsLong(byte exp) {
-        return ((long)exp & DEC64_EXPONENT_MASK);
+        return ((long) exp & DEC64_EXPONENT_MASK);
     }
 
     public static boolean overflow(long number) {
@@ -48,20 +50,16 @@ public final class Basic64 {
 
     public static @DEC64
     long of(long coeff, long exponent) {
-        if (exponent > 127 || exponent < -127) {
-            if (overflow(coeff))
-                return salvageBoth(coeff, exponent);
-            else
-                return salvageExp(coeff, exponent);
-        }
+        if (exponent > 127 || exponent < -127) 
+            return DEC64_NAN;
         return of(coeff, (byte) exponent);
     }
 
     public static @DEC64
     long of(long coeff, byte exponent) {
         if (overflow(coeff))
-            return salvageCoeff(coeff, exponent);
-        return (coeff << 8) | (DEC64_EXPONENT_MASK & (long) exponent);
+            return DEC64_NAN;
+        return (coeff << 8) | exponentAsLong(exponent);
     }
 
     public static @DEC64
@@ -95,42 +93,24 @@ public final class Basic64 {
     }
 
     public static boolean isNaN(@DEC64 long number) {
-        return exponent(number) == DEC64_NAN;
+        return (DEC64_EXPONENT_MASK & (long)exponent(number)) == DEC64_NAN;
     }
 
     public static boolean isInteger(@DEC64 long number) {
         return exponent(number) < 0;
     }
 
+    public static boolean isBasic(@DEC64 long number) {
+        return exponent(number) == 0;
+    }
+
     public static boolean isZero(@DEC64 long number) {
         return coefficient(number) == DEC64_ZERO;
     }
 
-    static long salvageCoeff(long coeff, byte expa) {
-        return DEC64_NAN;
-    }
-
-    static long salvageExp(long coeff, long expa) {
-        if (expa > 127) {
-            long tmpc = coeff;
-            long places = expa - 127;
-            for (int i = 0; i < places; i++) {
-                tmpc *= 10;
-                if (overflow(tmpc << 8))
-                    return DEC64_NAN;
-            }
-            return of(tmpc, 127);
-        }
-
-        return DEC64_NAN;
-    }
-
-    static long salvageBoth(long coeff, long expa) {
-        // FIXME Is this worth it?
-        return DEC64_NAN;
-    }
-
     public static boolean equals64(@DEC64 long a, @DEC64 long b) {
+        if (isNaN(a) || isNaN(b))
+            return false; // NaN != NaN
         byte expa = exponent(a);
         byte expb = exponent(b);
         if (expa == expb) {
@@ -272,7 +252,19 @@ public final class Basic64 {
 
     public static @DEC64
     long dec(@DEC64 long minuend) {
-        return 0;
+        minuend = canonical(minuend);
+        if (isBasic(minuend)) {
+            return minuend - DEC64_ONE;
+        }
+        byte exp = exponent(minuend);
+        if (exp > 0) {
+            return minuend;
+        } else {
+            // floating point case...
+        }
+
+        // Should never happen
+        return DEC64_NAN;
     }/* decrementation */
 
 
@@ -290,13 +282,20 @@ public final class Basic64 {
 
     public static @DEC64
     long inc(@DEC64 long augend) {
-        return 0;
-    }/* incrementation */
+        augend = canonical(augend);
+        if (isBasic(augend)) {
+            return augend + DEC64_ONE;
+        }
+        byte exp = exponent(augend);
+        if (exp > 0) {
+            return augend;
+        } else {
+            // floating point case...
+        }
 
-//    public static long
-//
-//    int (long number) {
-//    }/* integer */
+        // Should be impossible to happen
+        return DEC64_NAN;
+    }
 
     public static long integer_divide(@DEC64 long dividend, @DEC64 long divisor) {
         if (coefficient(divisor) == 0)

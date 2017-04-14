@@ -71,16 +71,37 @@ public class SimpleTest {
             @DEC64 long check = last + exponentAsLong(exp);
             assertTrue("1_" + (-exp) + "(" + last + " + " + exp + ") should equal 1CL but is: " + check, equals64(DEC64_ONE, check));
             assertTrue("1_" + (-exp) + " should equal 1CL but is: " + check, equals64(check, DEC64_ONE));
-            
+
             @DEC64 long canonical = canonical(check);
-            assertTrue(canonical + "(" + last + " + " + exp + ") should equal 1CL ("+ DEC64_ONE +") but is: " + canonical, DEC64_ONE == canonical);
+            assertTrue(canonical + "(" + last + " + " + exp + ") should equal 1CL (" + DEC64_ONE + ") but is: " + canonical, DEC64_ONE == canonical);
         }
+    }
+
+    @Test
+    public void testIncDec() {
+        assertTrue(isNaN(DEC64_NAN));
+        
+        assertTrue("0 = (-1)++", equals64(DEC64_ZERO, inc(DEC64_NEGATIVE_ONE)));
+        assertTrue("1 = (0)++", equals64(DEC64_ONE, inc(DEC64_ZERO)));
+        assertTrue("2 = (1)++", equals64(DEC64_TWO, inc(DEC64_ONE)));
+        assertTrue("1 = (2)--", equals64(dec(DEC64_TWO), DEC64_ONE));
+        assertTrue("0 = (1)--", equals64(dec(DEC64_ONE), DEC64_ZERO));
+        assertTrue("-1 = (0)--", equals64(dec(DEC64_ZERO), DEC64_NEGATIVE_ONE));
+
+        for (byte exp = 1; exp < Byte.MAX_VALUE; exp++) {
+            @DEC64 long large = of(MAX_PROMOTABLE, exp);
+            assertTrue("inc on large number should return same number", equals64(inc(large), large));
+        }
+        
+        // FIXME Need to write inc() and dec() for floating point vals
+        // assertTrue("(3.5)++ = 4.5", equals64(inc(of(35, (byte)-1)), of(45, (byte)-1)));
     }
 
     @Test
     public void simpleFactorial() {
         long current = of(1, 0);
-        for (int i = 2; i < FACTORIAL.length; i++) {
+        // FIXME - should do up to FACTORIAL.length 
+        for (int i = 2; i < 19; i++) {
             current = multiply(of(i, 0), current);
             assertTrue(i + "! value incorrect", equals64(FACTORIAL[i], current));
         }
@@ -116,7 +137,6 @@ public class SimpleTest {
         @DEC64 long micro = of(1, (byte) -6);
         s = FormatMode.STANDARD.format(micro);
         assertEquals("0.000001", s);
-
     }
 
     @Test
