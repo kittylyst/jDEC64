@@ -23,6 +23,8 @@ public final class Basic64 {
     private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
     private final static long MAX_PROMOTABLE = 3602879701896396L;
 
+    private Basic64() {}
+    
     /**
      *
      * @param number
@@ -251,8 +253,8 @@ public final class Basic64 {
         return DEC64_NAN;
     }
 
-    public static long less(@DEC64 long comparahend, @DEC64 long comparator) {
-        return 0;
+    public static boolean less(@DEC64 long comparahend, @DEC64 long comparator) {
+        return false;
     }/* comparison */
 
 
