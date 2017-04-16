@@ -50,7 +50,7 @@ public final class Basic64 {
 
     public static @DEC64
     long of(long coeff, long exponent) {
-        if (exponent > 127 || exponent < -127) 
+        if (exponent > 127 || exponent < -127)
             return DEC64_NAN;
         return of(coeff, (byte) exponent);
     }
@@ -93,7 +93,7 @@ public final class Basic64 {
     }
 
     public static boolean isNaN(@DEC64 long number) {
-        return (DEC64_EXPONENT_MASK & (long)exponent(number)) == DEC64_NAN;
+        return (DEC64_EXPONENT_MASK & (long) exponent(number)) == DEC64_NAN;
     }
 
     public static boolean isInteger(@DEC64 long number) {
@@ -230,9 +230,107 @@ public final class Basic64 {
         long coeffa = coefficient(a);
         long coeffb = coefficient(b);
 
-        return DEC64_NAN;
+        long ratio = coeffa / coeffb;
+        long remainder = coeffa % coeffb;
+        while (remainder > 0) {
+            ratio *= 5;
+            // FIXME
+
+            return DEC64_NAN;
+            
+        }
+        
+        return of(ratio, exp);
     }
 
+    public static @DEC64 long divide_translated() {
+            movsx   r8,r1_b         ; r8 is the first exponent
+    movsx   r9,r2_b         ; r9 is the second exponent
+    mov     r10,r1          ; r10 is the first number
+    mov     r11,r2          ; r11 is the second number
+
+; Set nan flags in r0.
+
+    cmp     r1_b,128        ; is the first operand nan?
+    sete    r0_b            ; r0_b is 1 if the first operand is nan
+    cmp     r2_b,128        ; is the second operand nan?
+    sete    r0_h            ; r0_h is 1 if the second operand is nan
+
+    sar     r10,8           ; r10 is the dividend coefficient
+    setnz   r1_b            ; r1_b is 1 if the dividend coefficient is zero
+    sar     r11,8           ; r11 is the divisor coefficient
+    setz    r1_h            ; r1_h is 1 if dividing by zero
+    or      r0_h,r0_b       ; r0_h is 1 if either is nan
+    or      r1_b,r0_b       ; r1_b is zero if the dividend is zero and not nan
+    jz      return_zero     ; if the dividend is zero, the quotient is zero
+    sub     r8,r9           ; r8 is the quotient exponent
+    or      r0_b,r1_h       ; r0_b is 1 if either is nan or the divisor is zero
+    jnz     return_nan
+    pad
+
+divide_measure:
+
+; We want to get as many bits into the quotient as possible in order to capture
+; enough significance. But if the quotient has more than 64 bits, then there
+; will be a hardware fault. To avoid that, we compare the magnitudes of the
+; dividend coefficient and divisor coefficient, and use that to scale the
+; dividend to give us a good quotient.
+
+    mov     r0,r10          ; r0 is the first coefficient
+    mov     r1,r11          ; r1 is the second coefficient
+    neg     r0              ; r0 is negated
+    cmovs   r0,r10          ; r0 is abs of dividend coefficient
+    neg     r1              ; r1 is negated
+    cmovs   r1,r11          ; r1 is abs of divisor coefficient
+    bsr     r0,r0           ; r0 is the dividend most significant bit
+    bsr     r1,r1           ; r1 is the divisor most significant bit
+; Scale up the dividend to be approximately 58 bits longer than the divisor.
+; Scaling uses factors of 10, so we must convert from a bit count to a digit
+; count by multiplication by 77/256 (approximately LN2/LN10).
+
+    add     r1,58           ; we want approximately 58 bits in the raw quotient
+    sub     r1,r0           ; r1 is the number of bits to add to the dividend
+    imul    r1,77           ; multiply by 77/256 to convert bits to digits
+    shr     r1,8            ; r1 is the number of digits to scale the dividend
+
+; The largest power of 10 that can be held in an int64 is 1e18.
+
+    cmp     r1,18           ; prescale the dividend if 10**r1 won't fit
+    jg      divide_prescale
+
+; Multiply the dividend by the scale factor, and divide that 128 bit result by
+; the divisor.  Because of the scaling, the quotient is guaranteed to use most
+; of the 64 bits in r0, and never more. Reduce the final exponent by the number
+; of digits scaled.
+
+    mov     r0,r10          ; r0 is the dividend coefficient
+    mov     r9,power
+    imul    qword ptr [r9][r1*8] ; r2:r0 is the dividend coefficient * 10**r1
+    idiv    r11             ; r0 is the quotient
+    sub     r8,r1           ; r8 is the exponent
+    jmp     pack            ; pack it up
+    pad
+
+divide_prescale:
+
+; If the number of scaling digits is larger than 18, then we will have to
+; scale in two steps: first prescaling the dividend to fill a register, and
+; then repeating to fill a second register. This happens when the divisor
+; coefficient is much larger than the dividend coefficient.
+
+    mov     r1,58           ; we want 58 bits or so in the dividend
+    sub     r1,r0           ; r1 is the number of additional bits needed
+    imul    r1,77           ; convert bits to digits
+    shr     r1,8            ; shift 8 is cheaper than div 256
+    mov     r9,power
+    imul    r10,qword ptr [r9][r1*8] ; multiply the dividend by power of ten
+    sub     r8,r1           ; reduce the exponent
+    jmp     divide_measure  ; try again
+
+    pad; -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+    }
+    
     public static boolean less(@DEC64 long comparahend, @DEC64 long comparator) {
         return false;
     }/* comparison */
@@ -276,7 +374,14 @@ public final class Basic64 {
 
     public static @DEC64
     long half(@DEC64 long dividend) {
-        return 0;
+        if (isNaN(dividend))
+            return DEC64_NAN;
+        long coeff = coefficient(dividend);
+        byte exp = exponent(dividend);
+        if ((coeff & 1L) == 0L) {
+            return of(coeff / 2L, exp);
+        }
+        return of(coeff * 5, --exp);
     }/* quotient */
 
 

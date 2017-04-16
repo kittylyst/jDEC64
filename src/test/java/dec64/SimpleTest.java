@@ -94,7 +94,7 @@ public class SimpleTest {
         }
         
         // FIXME Need to write inc() and dec() for floating point vals
-        // assertTrue("(3.5)++ = 4.5", equals64(inc(of(35, (byte)-1)), of(45, (byte)-1)));
+         assertTrue("(3.5)++ = 4.5", equals64(inc(of(35, (byte)-1)), of(45, (byte)-1)));
     }
 
     @Test
