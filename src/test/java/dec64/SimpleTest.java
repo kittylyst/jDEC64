@@ -12,6 +12,14 @@ import org.junit.Ignore;
  */
 public class SimpleTest {
 
+    private static final @DEC64 long TWO = of(2, (byte) 0);
+    private static final @DEC64 long THREE = of(30, (byte) -1);
+    private static final @DEC64 long FOUR = of(4, (byte) 0);
+    private static final @DEC64 long FIVE = of(5000, (byte) -3);
+    private static final @DEC64 long SIX = of(600, (byte) -2);
+    private static final @DEC64 long SEVEN = of(7, (byte) 0);
+    private static final @DEC64 long TEN = of(10, (byte) 0);
+
     @Test
     public void simpleAdd() {
         @DEC64 long minusOne = DEC64_NEGATIVE_ONE;
@@ -31,16 +39,19 @@ public class SimpleTest {
 
     @Test
     public void simpleMult() {
-        @DEC64 long ten = of(10, (byte) 0);
-        assertTrue("0.1 * 1 should equal 1", equals64(DEC64_ONE, multiply(ten, DEC64_POINT_ONE)));
-        @DEC64 long two = of(2, (byte) 0);
-        @DEC64 long three = of(30, (byte) -1);
-        @DEC64 long four = of(4, (byte) 0);
-        @DEC64 long six = of(600, (byte) -2);
-        assertTrue("3 * 4 should equal 2 * 6", equals64(multiply(three, four), multiply(two, six)));
-        assertTrue("4 * 3 should equal 2 * 6", equals64(multiply(four, three), multiply(two, six)));
-        assertTrue("3 * 4 should equal 6 * 2", equals64(multiply(three, four), multiply(six, two)));
-        assertTrue("4 * 3 should equal 6 * 2", equals64(multiply(four, three), multiply(six, two)));
+        assertTrue("0.1 * 1 should equal 1", equals64(DEC64_ONE, multiply(TEN, DEC64_POINT_ONE)));
+        assertTrue("3 * 4 should equal 2 * 6", equals64(multiply(THREE, FOUR), multiply(TWO, SIX)));
+        assertTrue("4 * 3 should equal 2 * 6", equals64(multiply(FOUR, THREE), multiply(TWO, SIX)));
+        assertTrue("3 * 4 should equal 6 * 2", equals64(multiply(THREE, FOUR), multiply(SIX, TWO)));
+        assertTrue("4 * 3 should equal 6 * 2", equals64(multiply(FOUR, THREE), multiply(SIX, TWO)));
+    }
+
+    @Test
+    public void simpleDivide() {
+        assertTrue("4 / 2 should equal 2", equals64(divide(FOUR, TWO), TWO));
+        assertTrue("10 / 2 should equal 5", equals64(divide(TEN, TWO), FIVE));
+        @DEC64 long three_p_five = of(35, (byte) -1);
+        assertTrue("7 / 2 should equal 3.5", equals64(divide(SEVEN, TWO), three_p_five));
     }
 
     @Test
@@ -80,7 +91,7 @@ public class SimpleTest {
     @Test
     public void testIncDec() {
         assertTrue(isNaN(DEC64_NAN));
-        
+
         assertTrue("0 = (-1)++", equals64(DEC64_ZERO, inc(DEC64_NEGATIVE_ONE)));
         assertTrue("1 = (0)++", equals64(DEC64_ONE, inc(DEC64_ZERO)));
         assertTrue("2 = (1)++", equals64(DEC64_TWO, inc(DEC64_ONE)));
@@ -92,9 +103,9 @@ public class SimpleTest {
             @DEC64 long large = of(MAX_PROMOTABLE, exp);
             assertTrue("inc on large number should return same number", equals64(inc(large), large));
         }
-        
+
         // FIXME Need to write inc() and dec() for floating point vals
-         assertTrue("(3.5)++ = 4.5", equals64(inc(of(35, (byte)-1)), of(45, (byte)-1)));
+        assertTrue("(3.5)++ = 4.5", equals64(inc(of(35, (byte) -1)), of(45, (byte) -1)));
     }
 
     @Test
@@ -105,7 +116,7 @@ public class SimpleTest {
             current = multiply(of(i, 0), current);
             assertTrue(i + "! value incorrect", equals64(FACTORIAL[i], current));
         }
-        assertEquals(3602879701896396L, MAX_DEC64 / 10L);
+        assertEquals(3602879701896396L, MAX_PROMOTABLE / 10L);
     }
 
     @Test
