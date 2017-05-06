@@ -6,16 +6,24 @@ package dec64;
  */
 public class Constants64 {
 
-    public static final long DEC64_TWO = 0x200L;
-    public static final long DEC64_E = 0x6092A113D8D574F0L;
-    public static final long DEC64_HALF = 0x5FFL;
-    public static final long DEC64_HALF_PI = 0x37CE4F32BB21A6F0L;
-    public static final long DEC64_NHALF_PI = 0xC831B0CD44DE59F0L;
-    public static final long DEC64_NPI = 0x9063619A89BCB4F0L;
-    public static final long DEC64_PI = 0x6F9C9E6576434CF0L;
-    public static final long DEC64_TWO_PI = 0x165286144ADA42F1L;
+    public final static @DEC64 long DEC64_NAN = 0x80L;
+    public final static @DEC64 long DEC64_ZERO = 0x00L;
+    public final static @DEC64 long DEC64_ONE = 0x100L;
+    public static final @DEC64 long DEC64_TWO = 0x200L;
 
-    public static final long[] FACTORIAL = {
+    
+    public final static @DEC64 long DEC64_NEGATIVE_ONE = 0xffff_ffff_ffff_ff00L;
+    public final static @DEC64 long DEC64_POINT_ONE = 0x1FFL;
+
+    public static final @DEC64 long DEC64_E = 0x6092A113D8D574F0L;
+    public static final @DEC64 long DEC64_HALF = 0x5FFL;
+    public static final @DEC64 long DEC64_HALF_PI = 0x37CE4F32BB21A6F0L;
+    public static final @DEC64 long DEC64_NHALF_PI = 0xC831B0CD44DE59F0L;
+    public static final @DEC64 long DEC64_NPI = 0x9063619A89BCB4F0L;
+    public static final @DEC64 long DEC64_PI = 0x6F9C9E6576434CF0L;
+    public static final @DEC64 long DEC64_TWO_PI = 0x165286144ADA42F1L;
+
+    public static final @DEC64 long[] FACTORIAL = {
         (1L << 8) + 0,
         (1L << 8) + 0,
         (2L << 8) + 0,

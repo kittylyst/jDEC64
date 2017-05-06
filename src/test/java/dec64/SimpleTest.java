@@ -11,13 +11,14 @@ import org.junit.Ignore;
  * @author ben
  */
 public class SimpleTest {
-
-    private static final @DEC64 long TWO = of(2, (byte) 0);
+    
+//    private static final @DEC64 long DEC64_TWO = of(2, (byte) 0);
     private static final @DEC64 long THREE = of(30, (byte) -1);
     private static final @DEC64 long FOUR = of(4, (byte) 0);
     private static final @DEC64 long FIVE = of(5000, (byte) -3);
     private static final @DEC64 long SIX = of(600, (byte) -2);
     private static final @DEC64 long SEVEN = of(7, (byte) 0);
+    private static final @DEC64 long EIGHT = of(8000, (byte) -3);
     private static final @DEC64 long TEN = of(10, (byte) 0);
 
     @Test
@@ -40,18 +41,20 @@ public class SimpleTest {
     @Test
     public void simpleMult() {
         assertTrue("0.1 * 1 should equal 1", equals64(DEC64_ONE, multiply(TEN, DEC64_POINT_ONE)));
-        assertTrue("3 * 4 should equal 2 * 6", equals64(multiply(THREE, FOUR), multiply(TWO, SIX)));
-        assertTrue("4 * 3 should equal 2 * 6", equals64(multiply(FOUR, THREE), multiply(TWO, SIX)));
-        assertTrue("3 * 4 should equal 6 * 2", equals64(multiply(THREE, FOUR), multiply(SIX, TWO)));
-        assertTrue("4 * 3 should equal 6 * 2", equals64(multiply(FOUR, THREE), multiply(SIX, TWO)));
+        assertTrue("3 * 4 should equal 2 * 6", equals64(multiply(THREE, FOUR), multiply(DEC64_TWO, SIX)));
+        assertTrue("4 * 3 should equal 2 * 6", equals64(multiply(FOUR, THREE), multiply(DEC64_TWO, SIX)));
+        assertTrue("3 * 4 should equal 6 * 2", equals64(multiply(THREE, FOUR), multiply(SIX, DEC64_TWO)));
+        assertTrue("4 * 3 should equal 6 * 2", equals64(multiply(FOUR, THREE), multiply(SIX, DEC64_TWO)));
     }
 
     @Test
     public void simpleDivide() {
-        assertTrue("4 / 2 should equal 2", equals64(divide(FOUR, TWO), TWO));
-        assertTrue("10 / 2 should equal 5", equals64(divide(TEN, TWO), FIVE));
+        assertTrue("4 / 2 should equal 2", equals64(divide(FOUR, DEC64_TWO), DEC64_TWO));
+        assertTrue("10 / 2 should equal 5", equals64(divide(TEN, DEC64_TWO), FIVE));
         @DEC64 long three_p_five = of(35, (byte) -1);
-        assertTrue("7 / 2 should equal 3.5", equals64(divide(SEVEN, TWO), three_p_five));
+        assertTrue("7 / 2 should equal 3.5", equals64(divide(SEVEN, DEC64_TWO), three_p_five));
+        @DEC64 long zero_p_one_two_five = of(125, (byte) -3);
+        assertTrue("10 / 8 should equal 0.125", equals64(divide(DEC64_ONE, EIGHT), zero_p_one_two_five));
     }
 
     @Test

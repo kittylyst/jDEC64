@@ -1,17 +1,12 @@
 package dec64;
 
+import static dec64.Constants64.*;
+
 /**
  *
  * @author ben
  */
 public final class Basic64 {
-
-    public final static @DEC64 long DEC64_NAN = 0x80L;
-    public final static @DEC64 long DEC64_ZERO = 0x00L;
-    public final static @DEC64 long DEC64_ONE = 0x100L;
-
-    public final static @DEC64 long DEC64_NEGATIVE_ONE = 0xffff_ffff_ffff_ff00L;
-    public final static @DEC64 long DEC64_POINT_ONE = 0x1FFL;
 
     // Max and min coefficients - not DEC64 values - should not be neded outside the library
     final static long MAX_PROMOTABLE = 0x7f_ffff_ffff_ffffL; // 36028797018963967L
@@ -344,12 +339,8 @@ public final class Basic64 {
         byte exp = exponent(minuend);
         if (exp > 0) {
             return minuend;
-        } else {
-            // floating point case...
         }
-
-        // Should never happen
-        return DEC64_NAN;
+        return subtract(minuend, DEC64_ONE);
     }/* decrementation */
 
 
@@ -381,12 +372,9 @@ public final class Basic64 {
         byte exp = exponent(augend);
         if (exp > 0) {
             return augend;
-        } else {
-            // floating point case...
         }
 
-        // Should be impossible to happen
-        return DEC64_NAN;
+        return add(augend, DEC64_ONE);
     }
 
     public static long integer_divide(@DEC64 long dividend, @DEC64 long divisor) {
