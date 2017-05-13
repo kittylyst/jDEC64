@@ -173,10 +173,13 @@ public class SimpleTest {
 
 	@Test
 	public void absolute() {
-
 		assertTrue("abs value of -1 should equal 1", equals64(abs(DEC64_NEGATIVE_ONE), DEC64_ONE));
-		assertTrue("abs value of -1 should equal 1", equals64(abs(DEC64_ONE), DEC64_ONE));
-
+		assertTrue("abs value of 1 should equal 1", equals64(abs(DEC64_ONE), DEC64_ONE));
 	}
 
+	@Test
+	public void negativeNumber() {
+		assertTrue("neg value of -1 should equal 1", equals64(neg(DEC64_NEGATIVE_ONE), DEC64_ONE));
+//		assertTrue("neg value of 1 should equal -1", equals64(neg(DEC64_ONE), DEC64_NEGATIVE_ONE));
+	}
 }
