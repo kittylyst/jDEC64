@@ -320,7 +320,11 @@ public final class Basic64 {
 
     public static @DEC64
     long abs(@DEC64 long number) {
-        return 0;
+        if (number < 0) {
+            number *= -1;
+        }
+        return number;
+
     }/* absolution */
 
 
