@@ -11,7 +11,4 @@ foo*
 *.jar
 **/Scratch*.java
 *.ser
-.idea/jDEC64.iml
-.idea/misc.xml
-.idea/modules.xml
-.idea/workspace.xml
+.idea
