@@ -11,7 +11,7 @@ import org.junit.Ignore;
  * @author ben
  */
 public class SimpleTest {
-    
+
 //    private static final @DEC64 long DEC64_TWO = of(2, (byte) 0);
     private static final @DEC64 long THREE = of(30, (byte) -1);
     private static final @DEC64 long FOUR = of(4, (byte) 0);
@@ -114,7 +114,7 @@ public class SimpleTest {
     @Test
     public void simpleFactorial() {
         long current = of(1, 0);
-        // FIXME - should do up to FACTORIAL.length 
+        // FIXME - should do up to FACTORIAL.length
         for (int i = 2; i < 19; i++) {
             current = multiply(of(i, 0), current);
             assertTrue(i + "! value incorrect", equals64(FACTORIAL[i], current));
@@ -161,4 +161,11 @@ public class SimpleTest {
         assertEquals("1.0", s);
     }
 
+    @Test
+    public void moduloTest(){
+
+        assertTrue("4 % 7 should equal 4", equals64(modulo(FOUR, SEVEN), FOUR));
+        assertTrue("7 % 2 should equal 1", equals64(modulo(SEVEN, DEC64_TWO),SEVEN));
+
+    }
 }
