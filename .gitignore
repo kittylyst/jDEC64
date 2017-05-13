@@ -11,3 +11,4 @@ foo*
 *.jar
 **/Scratch*.java
 *.ser
+.idea
