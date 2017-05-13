@@ -75,6 +75,7 @@ public final class Basic64 {
             while (exp > 0 && coeff < MAX_PROMOTABLE) {
                 out = of(10 * coeff, --exp);
                 coeff = coefficient(out);
+                
             }
         } else {
             while (exp < 0 && coeff % 10 == 0) {
