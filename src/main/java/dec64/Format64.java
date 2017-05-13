@@ -1,5 +1,7 @@
 package dec64;
 
+import static dec64.Constants64.DEC64_ZERO;
+
 /**
  *
  * @author ben
@@ -29,7 +31,7 @@ public final class Format64 {
 
     public static @DEC64
     long toDEC64(final String s) {
-        return Basic64.DEC64_ZERO;
+        return DEC64_ZERO;
     }
 
 }
