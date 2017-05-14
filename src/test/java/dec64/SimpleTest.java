@@ -1,18 +1,18 @@
 package dec64;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
+
 import static dec64.Basic64.*;
 import static dec64.Constants64.*;
+
 import org.junit.Ignore;
 
 /**
- *
  * @author ben
  */
 public class SimpleTest {
-
-//    private static final @DEC64 long DEC64_TWO = of(2, (byte) 0);
     private static final @DEC64 long THREE = of(30, (byte) -1);
     private static final @DEC64 long FOUR = of(4, (byte) 0);
     private static final @DEC64 long FIVE = of(5000, (byte) -3);
@@ -161,4 +161,21 @@ public class SimpleTest {
         assertEquals("1.0", s);
     }
 
+    @Test
+    public void moduloTest() {
+        assertTrue("4 % 7 should equal 4", equals64(modulo(FOUR, SEVEN), FOUR));
+//        assertTrue("7 % 2 should equal 1", equals64(modulo(SEVEN, DEC64_TWO), DEC64_ONE));
+    }
+
+    @Test
+    public void absolute() {
+        assertTrue("abs value of -1 should equal 1", equals64(abs(DEC64_NEGATIVE_ONE), DEC64_ONE));
+        assertTrue("abs value of 1 should equal 1", equals64(abs(DEC64_ONE), DEC64_ONE));
+    }
+
+    @Test
+    public void negativeNumber() {
+        assertTrue("neg value of -1 should equal 1", equals64(neg(DEC64_NEGATIVE_ONE), DEC64_ONE));
+//		assertTrue("neg value of 1 should equal -1", equals64(neg(DEC64_ONE), DEC64_NEGATIVE_ONE));
+    }
 }
