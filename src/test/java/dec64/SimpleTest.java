@@ -11,7 +11,7 @@ import org.junit.Ignore;
  * @author ben
  */
 public class SimpleTest {
-    
+
 //    private static final @DEC64 long DEC64_TWO = of(2, (byte) 0);
     private static final @DEC64 long THREE = of(30, (byte) -1);
     private static final @DEC64 long FOUR = of(4, (byte) 0);
