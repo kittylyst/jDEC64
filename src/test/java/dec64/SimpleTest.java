@@ -13,6 +13,7 @@ import org.junit.Ignore;
  * @author ben
  */
 public class SimpleTest {
+
     private static final @DEC64 long THREE = of(30, (byte) -1);
     private static final @DEC64 long FOUR = of(4, (byte) 0);
     private static final @DEC64 long FIVE = of(5000, (byte) -3);
@@ -168,9 +169,9 @@ public class SimpleTest {
     }
 
     @Test
-    public void absolute() {
-        assertTrue("abs value of -1 should equal 1", equals64(abs(DEC64_NEGATIVE_ONE), DEC64_ONE));
+    public void simpleAbsolute() {
         assertTrue("abs value of 1 should equal 1", equals64(abs(DEC64_ONE), DEC64_ONE));
+        assertTrue("abs value of -1 should equal 1", equals64(abs(DEC64_NEGATIVE_ONE), DEC64_ONE));
     }
 
     @Test
