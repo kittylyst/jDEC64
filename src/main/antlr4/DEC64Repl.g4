@@ -1,4 +1,8 @@
-grammar repl;
+grammar DEC64Repl;
+
+@header {
+   package dec64.repl;
+}
 
 expression
    : multExpr ((PLUS | MINUS) multExpr)*
