@@ -17,7 +17,7 @@ public final class REPL64 {
     }
 
     private void loop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
     
 }
