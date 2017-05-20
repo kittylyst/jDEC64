@@ -4,7 +4,9 @@ import dec64.DEC64;
 import java.util.EmptyStackException;
 
 /**
- *
+ * A simple, non-resizing implementation of a stack that holds @DEC64 values.
+ * Zero-allocation, except for exception throwing. Fully synchronized.
+ * 
  * @author kittylyst
  */
 public final class StackDec64 {
@@ -77,7 +79,7 @@ public final class StackDec64 {
      *          no items; <code>false</code> otherwise.
      */
     public synchronized boolean empty() {
-        return size() == 0;
+        return top == 0;
     }
 
     /**
@@ -89,8 +91,8 @@ public final class StackDec64 {
      *
      * @param   v   the desired value.
      * @return  the 1-based position from the top of the stack where
-     *          the object is located; the return value <code>-1</code>
-     *          indicates that the object is not on the stack.
+     *          the value is located; the return value <code>-1</code>
+     *          indicates that the value is not present on the stack.
      */
     public synchronized int search(@DEC64 long v) {
         int i = lastIndexOf(v);
@@ -101,6 +103,14 @@ public final class StackDec64 {
         return -1;
     }
 
+    /**
+     * Returns the last index where a value occurs on this stack.
+     *
+     * @param   v   the desired value.
+     * @return  the index in the stack where the value is located; the return
+     *          value <code>-1</code> indicates that the value is not present on
+     *          the stack.
+     */
     public synchronized int lastIndexOf(@DEC64 long v) {
         for (int i = top; i >= 0; i--) {
             if (contents[i] == v)
