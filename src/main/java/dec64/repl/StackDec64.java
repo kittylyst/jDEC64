@@ -1,6 +1,6 @@
 package dec64.repl;
 
-import dec64.DEC64;
+import dec64.annotations.DEC64;
 import java.util.EmptyStackException;
 
 /**

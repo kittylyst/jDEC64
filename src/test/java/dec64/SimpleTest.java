@@ -1,5 +1,6 @@
 package dec64;
 
+import dec64.annotations.DEC64;
 import static org.junit.Assert.*;
 
 import org.junit.Test;

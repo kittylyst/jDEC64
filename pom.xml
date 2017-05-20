@@ -31,6 +31,7 @@
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>4.5.3</version>
                 <configuration>
+                    <visitor>true</visitor>
                     <!-- Hack, why can't we have a proper basedir, with package dirs auto-generated -->
                     <outputDirectory>src/main/generated-sources/dec64/repl</outputDirectory>
                 </configuration>

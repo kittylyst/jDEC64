@@ -17,7 +17,8 @@ powExpr
    ;
 
 atom
-   : scientific
+   : number
+//   : scientific
    | LPAREN expression RPAREN
    | func
    ;
@@ -27,7 +28,7 @@ scientific
    ;
 
 number
-   : MINUS? DIGIT+ (POINT DIGIT+)?
+   : MINUS? wholepart=DIGIT+ (POINT fracpart=DIGIT+)?
 ;
 
 func
