@@ -10,7 +10,7 @@ import static dec64.Constants64.*;
 import org.junit.Ignore;
 
 /**
- * @author ben
+ * @author kittylyst
  */
 public class SimpleTest {
 

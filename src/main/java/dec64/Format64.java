@@ -4,7 +4,7 @@ import static dec64.Constants64.DEC64_ZERO;
 
 /**
  *
- * @author ben
+ * @author kittylyst
  */
 public final class Format64 {
 

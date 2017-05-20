@@ -2,7 +2,7 @@ package dec64;
 
 /**
  *
- * @author ben
+ * @author kittylyst
  */
 public class Constants64 {
 

@@ -4,7 +4,7 @@ import static dec64.Basic64.*;
 
 /**
  *
- * @author ben
+ * @author kittylyst
  */
 public enum FormatMode {
 

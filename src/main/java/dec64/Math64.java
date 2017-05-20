@@ -5,7 +5,7 @@ import static dec64.Constants64.*;
 
 /**
  *
- * @author ben
+ * @author kittylyst
  */
 public class Math64 {
 
