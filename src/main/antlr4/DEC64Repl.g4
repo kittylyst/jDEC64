@@ -5,20 +5,16 @@ grammar DEC64Repl;
 }
 
 expression
-   : multExpr ((PLUS | MINUS) multExpr)*
-   ;
-
-multExpr
-   : powExpr ((TIMES | DIV | MOD) powExpr)*
-   ;
-
-powExpr
-   : atom (POW atom)*
+   : (PLUS | MINUS) atom
+   | left=expression (PLUS | MINUS) right=expression
+   | left=expression (TIMES | DIV | MOD) right=expression
+   | atom
    ;
 
 atom
    : number
 //   : scientific
+   | base=number POW power=number
    | LPAREN expression RPAREN
    | func
    ;
