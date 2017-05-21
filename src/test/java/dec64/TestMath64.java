@@ -1,14 +1,16 @@
 package dec64;
 
+import dec64.annotations.DEC64;
 import static dec64.Basic64.*;
 import static dec64.Math64.*;
 import static dec64.Constants64.*;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
- * @author ben
+ * @author kittylyst
  */
 public class TestMath64 {
 
@@ -152,6 +154,7 @@ public class TestMath64 {
     }
 
     @Test
+    @Ignore
     public void test_all_sqrt() {
         test_sqrt(DEC64_ZERO, DEC64_ZERO, "0");
         test_sqrt(DEC64_ONE, DEC64_ONE, "1");

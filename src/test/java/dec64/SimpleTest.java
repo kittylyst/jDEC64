@@ -1,5 +1,6 @@
 package dec64;
 
+import dec64.annotations.DEC64;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -10,7 +11,7 @@ import static dec64.Constants64.*;
 import org.junit.Ignore;
 
 /**
- * @author ben
+ * @author kittylyst
  */
 public class SimpleTest {
 
