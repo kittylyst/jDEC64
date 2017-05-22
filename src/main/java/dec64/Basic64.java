@@ -1,21 +1,24 @@
 package dec64;
 
+import dec64.annotations.DEC64;
 import static dec64.Constants64.*;
 
 /**
  *
- * @author ben
+ * @author kittylyst
  */
 public final class Basic64 {
 
     // Max and min coefficients - not DEC64 values - should not be neded outside the library
     final static long MAX_PROMOTABLE = 0x7f_ffff_ffff_ffffL; // 36028797018963967L
     final static long MIN_PROMOTABLE = 0xff_ffff_ffff_ffffL;
+    final static long DEC64_MIN_ABS_COEFFICIENT = -36028797018963968L; // 0x80_0000_0000_0000L
 
     private final static long DEC64_EXPONENT_MASK = 0xFFL;
     private final static long DEC64_COEFFICIENT_MASK = 0xffff_ffff_ffff_ff00L;
 
     private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
+
     private final static byte MAX_DIGITS = 17;
 
     private Basic64() {
@@ -75,7 +78,7 @@ public final class Basic64 {
             while (exp > 0 && coeff < MAX_PROMOTABLE) {
                 out = of(10 * coeff, --exp);
                 coeff = coefficient(out);
-                
+
             }
         } else {
             while (exp < 0 && coeff % 10 == 0) {
@@ -321,9 +324,15 @@ public final class Basic64 {
 
     public static @DEC64
     long abs(@DEC64 long number) {
-        return 0;
-    }/* absolution */
-
+        if (isNaN(number))
+            return DEC64_NAN;
+        @DEC64 long coeff = coefficient(number);
+        if (coeff >= 0)
+            return number;
+        if (coeff > DEC64_MIN_ABS_COEFFICIENT)
+            return of(-coeff, exponent(number));
+        return DEC64_NAN;
+    }
 
     public static @DEC64
     long ceiling(@DEC64 long number) {
@@ -398,7 +407,12 @@ public final class Basic64 {
 
     public static @DEC64
     long neg(@DEC64 long number) {
-        return of(-coefficient(number), exponent(number));
+        if (isNaN(number))
+            return DEC64_NAN;
+        @DEC64 long coeff = coefficient(number);
+        if (coeff > DEC64_MIN_ABS_COEFFICIENT)
+            return of(-coeff, exponent(number));
+        return DEC64_NAN;
     }
 
     ////////////////////////////////////////////////////////

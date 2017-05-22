@@ -1,8 +1,10 @@
 package dec64;
 
+import dec64.annotations.DEC64;
+
 /**
  *
- * @author ben
+ * @author kittylyst
  */
 public class Constants64 {
 

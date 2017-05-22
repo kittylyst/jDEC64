@@ -1,4 +1,4 @@
-package dec64;
+package dec64.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
