@@ -52,3 +52,34 @@ class. These include:
 
 * Lots of other broken things
 
+## Things to consider
+
+Floating point numbers do not work in the way that many people (even experienced
+developers may expect). For example:
+
+* A FP number 
+
+* Simple operations like ++ may not work quite in the expected manner, e.g.:
+
+To see some of this in action, consider this JUnit test:
+
+----
+    @Test
+    public void testDouble() {
+        double d = 2.0;
+        for (int i=0; i<100; i++) {
+            d = d * 2;
+        }
+        double d1 = d + 1;
+        assertTrue("Increment is a no-op for doubles this large", d == d1);
+    }
+----
+
+Firstly, 2**100 >> Long.MAX_VALUE so doubles can clearly hold numbers that are
+much, much larger than the signed integer representation of the same width.
+
+The second point is that not every integer can be represented above the number
+of bits of the coefficient (56 bits in our case).
+
+The third point is that the distribution of floating-point numbers is by no
+means even across their range (see eg the Lemire blog post for more details).

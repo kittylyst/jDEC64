@@ -78,7 +78,6 @@ public final class Basic64 {
             while (exp > 0 && coeff < MAX_PROMOTABLE) {
                 out = of(10 * coeff, --exp);
                 coeff = coefficient(out);
-
             }
         } else {
             while (exp < 0 && coeff % 10 == 0) {
@@ -184,14 +183,31 @@ public final class Basic64 {
     long subtract(@DEC64 long a, @DEC64 long b) {
         if (isNaN(a) || isNaN(b))
             return DEC64_NAN;
-        if (exponent(a) == exponent(b)) {
+        a = canonical(a);
+        b = canonical(b);
+        byte expa = exponent(a);
+        byte expb = exponent(b);
+        if (expa == expb) {
             long coeff = coefficient(a) - coefficient(b);
             if (overflow(coeff))
                 return DEC64_NAN;
-            return of(coeff, exponent(a));
+            return of(coeff, expa);
         }
-
-        return 0;
+        if (expa > expb) {
+            long coeffa = coefficient(a);
+            for (int i = 0; i < (expa - expb); i++) {
+                // FIXME Implement overflow case
+                coeffa *= 10;
+            }
+            return of(coeffa - coefficient(b), expb);
+        } else {
+            long coeffb = coefficient(b);
+            for (int i = 0; i < (expb - expa); i++) {
+                // FIXME Implement overflow case
+                coeffb *= 10;
+            }
+            return of(coeffb - coefficient(a), expa);
+        }
     }
 
     public static @DEC64
@@ -317,11 +333,6 @@ public final class Basic64 {
         return DEC64_NAN;
     }
 
-    public static boolean less(@DEC64 long comparahend, @DEC64 long comparator) {
-        return false;
-    }/* comparison */
-
-
     public static @DEC64
     long abs(@DEC64 long number) {
         if (isNaN(number))
@@ -333,12 +344,6 @@ public final class Basic64 {
             return of(-coeff, exponent(number));
         return DEC64_NAN;
     }
-
-    public static @DEC64
-    long ceiling(@DEC64 long number) {
-        return 0;
-    }/* integer */
-
 
     public static @DEC64
     long dec(@DEC64 long minuend) {
@@ -355,17 +360,12 @@ public final class Basic64 {
 
 
     public static @DEC64
-    long floor(@DEC64 long dividend) {
-        return 0;
-    }/* integer */
-
-
-    public static @DEC64
     long half(@DEC64 long dividend) {
         if (isNaN(dividend))
             return DEC64_NAN;
         long coeff = coefficient(dividend);
         byte exp = exponent(dividend);
+        // FIXME If coeff is large, this might not work
         if ((coeff & 1L) == 0L) {
             return of(coeff / 2L, exp);
         }
@@ -386,14 +386,6 @@ public final class Basic64 {
 
         return add(augend, DEC64_ONE);
     }
-
-    public static long integer_divide(@DEC64 long dividend, @DEC64 long divisor) {
-        if (coefficient(divisor) == 0)
-            return DEC64_NAN;
-        // FIXME
-        return 0;
-    }/* quotient */
-
 
     public static @DEC64
     long modulo(@DEC64 long dividend, @DEC64 long divisor) {
@@ -434,5 +426,32 @@ public final class Basic64 {
     public static long signum(long number) {
         return 0;
     }/* signature */
+
+
+    public static @DEC64
+    long floor(@DEC64 long dividend) {
+        return 0;
+    }/* integer */
+
+
+    public static @DEC64
+    long integer_divide(@DEC64 long dividend, @DEC64 long divisor) {
+        if (coefficient(divisor) == 0)
+            return DEC64_NAN;
+        // FIXME
+        return 0;
+    }/* quotient */
+
+
+    public static @DEC64
+    long ceiling(@DEC64 long number) {
+        return 0;
+    }/* integer */
+
+
+    public static boolean less(@DEC64 long comparahend, @DEC64 long comparator) {
+        return false;
+    }/* comparison */
+
 
 }

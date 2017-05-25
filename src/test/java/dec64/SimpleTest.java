@@ -37,7 +37,13 @@ public class SimpleTest {
 
         @DEC64 long hundred = of(10, (byte) 1);
         assertTrue("100 + 10 should equal 110", equals64(of(110, (byte) 0), add(hundred, ten)));
+    }
 
+    @Test
+    public void simpleSub() {
+        assertTrue("1 - 0.1 should equal 0.9", equals64(Basic64.of(9L, (byte)-1), subtract(DEC64_ONE, DEC64_POINT_ONE)));
+        assertTrue("700 - 0.35 should equal 699.65", 
+                equals64(Basic64.of(69965L, (byte)-2), subtract(Basic64.of(700, 0), Basic64.of(35L, (byte)-2))));
     }
 
     @Test
@@ -180,4 +186,5 @@ public class SimpleTest {
         assertTrue("neg value of -1 should equal 1", equals64(neg(DEC64_NEGATIVE_ONE), DEC64_ONE));
 //		assertTrue("neg value of 1 should equal -1", equals64(neg(DEC64_ONE), DEC64_NEGATIVE_ONE));
     }
+
 }
