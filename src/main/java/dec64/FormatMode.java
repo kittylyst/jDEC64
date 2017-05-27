@@ -59,6 +59,11 @@ public enum FormatMode {
                             sb.append(coeff);
                         }
                     }
+                    // FIXME Need to trim trailing zeros...
+//                    for (int i=sb.length() - 1; i>0; i--) {
+//                        if (sb.charAt(i) == '0')
+//                            sb.deleteCharAt(i);
+//                    }
 
                     return sb.toString();
                 }

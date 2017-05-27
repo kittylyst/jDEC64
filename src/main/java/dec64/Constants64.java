@@ -19,6 +19,8 @@ public class Constants64 {
 
     public static final @DEC64 long DEC64_E = 0x6092A113D8D574F0L;
     public static final @DEC64 long DEC64_HALF = 0x5FFL;
+    public static final @DEC64 long DEC64_THIRD = 85333333333333489L;
+    
     public static final @DEC64 long DEC64_HALF_PI = 0x37CE4F32BB21A6F0L;
     public static final @DEC64 long DEC64_NHALF_PI = 0xC831B0CD44DE59F0L;
     public static final @DEC64 long DEC64_NPI = 0x9063619A89BCB4F0L;

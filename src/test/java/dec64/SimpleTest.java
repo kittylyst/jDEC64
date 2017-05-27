@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static dec64.Basic64.*;
 import static dec64.Constants64.*;
+import static dec64.TestConstants.*;
 
 import org.junit.Ignore;
 
@@ -15,20 +16,9 @@ import org.junit.Ignore;
  */
 public class SimpleTest {
 
-    private static final @DEC64 long THREE = of(30, (byte) -1);
-    private static final @DEC64 long FOUR = of(4, (byte) 0);
-    private static final @DEC64 long FIVE = of(5000, (byte) -3);
-    private static final @DEC64 long SIX = of(600, (byte) -2);
-    private static final @DEC64 long SEVEN = of(7, (byte) 0);
-    private static final @DEC64 long EIGHT = of(8000, (byte) -3);
-    private static final @DEC64 long TEN = of(10, (byte) 0);
-
     @Test
     public void simpleAdd() {
-        @DEC64 long minusOne = DEC64_NEGATIVE_ONE;
-        @DEC64 long one = DEC64_ONE;
-
-        assertEquals("-1 + 1 should equal 0", DEC64_ZERO, add(one, minusOne));
+        assertEquals("-1 + 1 should equal 0", DEC64_ZERO, add(DEC64_ONE, DEC64_NEGATIVE_ONE));
 
         @DEC64 long ten = of(10, (byte) 0);
         @DEC64 long ten2 = of(1, (byte) 1);
@@ -63,6 +53,10 @@ public class SimpleTest {
         assertTrue("7 / 2 should equal 3.5", equals64(divide(SEVEN, DEC64_TWO), three_p_five));
         @DEC64 long zero_p_one_two_five = of(125, (byte) -3);
         assertTrue("10 / 8 should equal 0.125", equals64(divide(DEC64_ONE, EIGHT), zero_p_one_two_five));
+        assertTrue("3.5 / 2 should equal 1.75", equals64(divide(three_p_five, DEC64_TWO), of(175, (byte)-2)));
+        assertTrue("1.5 / 0.5 should equal 3", equals64(divide(of(15, (byte)-1), DEC64_HALF), THREE));
+        @DEC64 long third = divide(DEC64_ONE, THREE);
+        assertTrue("1 / 3 should equal 3 not "+ third, equals64(third, DEC64_THIRD));        
     }
 
     @Test
@@ -115,7 +109,6 @@ public class SimpleTest {
             assertTrue("inc on large number should return same number", equals64(inc(large), large));
         }
 
-        // FIXME Need to write inc() and dec() for floating point vals
         assertTrue("(3.5)++ = 4.5", equals64(inc(of(35, (byte) -1)), of(45, (byte) -1)));
     }
 
@@ -164,9 +157,12 @@ public class SimpleTest {
     @Test
     public void complexFormatSTD() {
         @DEC64 long largeOne = 2815;
-//        @DEC64 long largeOne = 256_000_000_000_000_241L;
         String s = FormatMode.STANDARD.format(largeOne);
         assertEquals("1.0", s);
+        @DEC64 long largerOne = 256_000_000_000_000_241L;
+        s = FormatMode.STANDARD.format(largerOne);
+        // FIXME
+//        assertEquals("1.0", s);
     }
 
     @Test

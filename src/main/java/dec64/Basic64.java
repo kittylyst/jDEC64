@@ -220,7 +220,6 @@ public final class Basic64 {
         return of(coeff, (byte) (exponent(a) + exponent(b)));
     }
 
-    // FIXME
     public static @DEC64
     long divide(@DEC64 long a, @DEC64 long b) {
         if (isNaN(a) || isNaN(b))
@@ -234,14 +233,9 @@ public final class Basic64 {
         if (expa == expb) {
             return divideLevel(a, b);
         }
-//        if (expa > expb) {
-//            return multiply(divideLevel(a, b), outMult)
-//        } else {
-//            
-//        }
-//        long outMult = of(1, exponent(a) - exponent(b));
+        long outMult = of(1, expa - expb);
 
-        return DEC64_NAN;
+        return multiply(divideLevel(a, b), outMult);
     }
 
     /**
