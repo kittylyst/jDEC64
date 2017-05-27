@@ -220,6 +220,7 @@ public final class Basic64 {
         return of(coeff, (byte) (exponent(a) + exponent(b)));
     }
 
+    // FIXME
     public static @DEC64
     long divide(@DEC64 long a, @DEC64 long b) {
         if (isNaN(a) || isNaN(b))
@@ -233,9 +234,14 @@ public final class Basic64 {
         if (expa == expb) {
             return divideLevel(a, b);
         }
-        long outMult = of(1, exponent(a) - exponent(b));
+//        if (expa > expb) {
+//            return multiply(divideLevel(a, b), outMult)
+//        } else {
+//            
+//        }
+//        long outMult = of(1, exponent(a) - exponent(b));
 
-        return multiply(divideLevel(a, b), outMult);
+        return DEC64_NAN;
     }
 
     /**
@@ -409,12 +415,12 @@ public final class Basic64 {
 
     ////////////////////////////////////////////////////////
     public static long normal(long number) {
-        return 0;
+        return DEC64_NAN;
     }/* normalization */
 
 
     public static long not(long value) {
-        return 0;
+        return DEC64_NAN;
     }/* notation */
 
 
@@ -424,13 +430,13 @@ public final class Basic64 {
 
 
     public static long signum(long number) {
-        return 0;
+        return DEC64_NAN;
     }/* signature */
 
 
     public static @DEC64
     long floor(@DEC64 long dividend) {
-        return 0;
+        return DEC64_NAN;
     }/* integer */
 
 
@@ -445,7 +451,7 @@ public final class Basic64 {
 
     public static @DEC64
     long ceiling(@DEC64 long number) {
-        return 0;
+        return DEC64_NAN;
     }/* integer */
 
 

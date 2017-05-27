@@ -95,6 +95,7 @@ public class Math64 {
         return result;
     }
 
+    //FIXME
     public static @DEC64 long sqrt(@DEC64 long radicand) {
     if (!isNaN(radicand) && radicand >= 0) {
         if (coefficient(radicand) == 0) {
