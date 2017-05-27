@@ -4,6 +4,8 @@ import dec64.annotations.DEC64;
 import static dec64.Basic64.*;
 import static dec64.Math64.*;
 import static dec64.Constants64.*;
+import static dec64.FormatMode.STANDARD;
+import static dec64.TestConstants.*;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,15 +18,6 @@ public class TestMath64 {
 
     static private @DEC64 long nannan;
     static private @DEC64 long zip;
-    static private @DEC64 long three = 0x300L;
-    static private @DEC64 long four = 0x400L;
-    static private @DEC64 long five = 0x500L;
-    static private @DEC64 long six = 0x600L;
-    static private @DEC64 long seven = 0x700L;
-    static private @DEC64 long eight = 0x800L;
-    static private @DEC64 long nine = 0x900L;
-    static private @DEC64 long ten = 0xA00L;
-//    static private @DEC64 long e = DEC64_E;
     static private @DEC64 long epsilon;
     static private @DEC64 long almost_one;
     static private @DEC64 long almost_negative_one;
@@ -71,7 +64,7 @@ public class TestMath64 {
         test_atan(DEC64_HALF_PI, of(10038848218538872L, -16), "pi/2");
         test_atan(DEC64_E, of(12182829050172776L, -16), "e");
         test_atan(DEC64_PI, of(12626272556789117L, -16), "pi");
-        test_atan(ten, of(14711276743037346L, -16), "10");
+        test_atan(TEN, of(14711276743037346L, -16), "10");
     }
 
     @Test
@@ -81,7 +74,7 @@ public class TestMath64 {
         test_cos(cent, of(99995000041666528L, -17), "0.01");
         test_cos(DEC64_PI, DEC64_NEGATIVE_ONE, "pi");
         test_cos(DEC64_HALF_PI, DEC64_ZERO, "pi");
-        test_cos(ten, of(-8390715290764525L, -16), "10");
+        test_cos(TEN, of(-8390715290764525L, -16), "10");
     }
 
     @Test
@@ -92,7 +85,7 @@ public class TestMath64 {
         test_exp(half, of(16487212707001281L, -16), "0.5");
         test_exp(DEC64_ONE, DEC64_E, "1");
         test_exp(DEC64_TWO, of(7389056098930650L, -15), "2");
-        test_exp(ten, of(22026465794806717L, -12), "10");
+        test_exp(TEN, of(22026465794806717L, -12), "10");
     }
 
     @Test
@@ -123,7 +116,7 @@ public class TestMath64 {
         test_log(DEC64_TWO, of(6931471805599453L, -16), "2");
         test_log(DEC64_E, DEC64_ONE, "e");
         test_log(DEC64_PI, of(11447298858494002L, -16), "pi");
-        test_log(ten, of(23025850929940457L, -16), "10");
+        test_log(TEN, of(23025850929940457L, -16), "10");
     }
 
     @Test
@@ -134,25 +127,25 @@ public class TestMath64 {
         test_raise(DEC64_E, half, of(16487212707001281L, -16), "e^0.5");
         test_raise(DEC64_E, DEC64_ONE, DEC64_E, "e^1");
         test_raise(DEC64_E, DEC64_TWO, of(7389056098930650L, -15), "e^2");
-        test_raise(DEC64_E, ten, of(22026465794806717L, -12), "e^10");
-        test_raise(four, half, DEC64_TWO, "4^0.5");
-        test_raise(DEC64_TWO, ten, of(1024, 0), "2^10");
+        test_raise(DEC64_E, TEN, of(22026465794806717L, -12), "e^10");
+        test_raise(FOUR, half, DEC64_TWO, "4^0.5");
+        test_raise(DEC64_TWO, TEN, of(1024, 0), "2^10");
     }
 
     @Test
     @Ignore
     public void test_all_root() {
         test_root(DEC64_TWO, DEC64_ZERO, DEC64_ZERO, "2|zero");
-        test_root(three, DEC64_ZERO, DEC64_ZERO, "3|zero");
-        test_root(three, half, of(7937005259840997L, -16), "3|1/2");
-        test_root(three, of(27, 0), three, "3|27");
-        test_root(three, of(-27, 0), of(-3, 0), "3|-27");
-        test_root(three, DEC64_PI, of(14645918875615233L, -16), "3|pi");
-        test_root(four, of(-27, 0), DEC64_NAN, "4|-27");
-        test_root(four, of(256, 0), four, "4|256");
-        test_root(four, of(1, 4), ten, "4|1e4");
-        test_root(four, of(1, 16), of(1, 4), "4|1e16");
-        test_root(four, DEC64_PI, of(13313353638003897L, -16), "4|pi");
+        test_root(THREE, DEC64_ZERO, DEC64_ZERO, "3|zero");
+        test_root(THREE, half, of(7937005259840997L, -16), "3|1/2");
+        test_root(THREE, of(27, 0), THREE, "3|27");
+        test_root(THREE, of(-27, 0), of(-3, 0), "3|-27");
+        test_root(THREE, DEC64_PI, of(14645918875615233L, -16), "3|pi");
+        test_root(FOUR, of(-27, 0), DEC64_NAN, "4|-27");
+        test_root(FOUR, of(256, 0), FOUR, "4|256");
+        test_root(FOUR, of(1, 4), TEN, "4|1e4");
+        test_root(FOUR, of(1, 16), of(1, 4), "4|1e16");
+        test_root(FOUR, DEC64_PI, of(13313353638003897L, -16), "4|pi");
     }
 
     @Test
@@ -165,18 +158,18 @@ public class TestMath64 {
         test_sin(DEC64_HALF_PI, DEC64_ONE, "pi/2");
         test_sin(DEC64_TWO, of(9092974268256817L, -16), "2");
         test_sin(DEC64_E, of(4107812905029087L, -16), "e");
-        test_sin(three, of(14112000805986722L, -17), "3");
+        test_sin(THREE, of(14112000805986722L, -17), "3");
         test_sin(DEC64_PI, DEC64_ZERO, "pi");
-        test_sin(four, of(-7568024953079283L, -16), "4");
-        test_sin(five, of(-9589242746631385L, -16), "5");
-        test_sin(ten, of(-5440211108893698L, -16), "10");
+        test_sin(FOUR, of(-7568024953079283L, -16), "4");
+        test_sin(FIVE, of(-9589242746631385L, -16), "5");
+        test_sin(TEN, of(-5440211108893698L, -16), "10");
         test_sin(of(-1, 0), of(-8414709848078965L, -16), "-1");
     }
 
     @Test
     public void test_all_sqrt() {
-        test_sqrt(DEC64_ZERO, DEC64_ZERO, "0");
-        test_sqrt(DEC64_ONE, DEC64_ONE, "1");
+//        test_sqrt(DEC64_ZERO, DEC64_ZERO, "0");
+//        test_sqrt(DEC64_ONE, DEC64_ONE, "1");
         test_sqrt(of(16, 0), of(4, 0), "16");
         test_sqrt(of(100, 0), of(10, 0), "100");
         test_sqrt(of(10000, -2), of(10, 0), "100");
@@ -196,7 +189,7 @@ public class TestMath64 {
         test_tan(DEC64_ONE, of(15574077246549022L, -16), "1");
         test_tan(DEC64_HALF_PI, DEC64_NAN, "pi/2");
         test_tan(DEC64_PI, DEC64_ZERO, "pi");
-        test_tan(ten, of(6483608274590867L, -16), "10");
+        test_tan(TEN, of(6483608274590867L, -16), "10");
     }
 
     private static void test_acos(@DEC64 long input, @DEC64 long expected, String msg) {
@@ -205,7 +198,7 @@ public class TestMath64 {
 
     private static void test_asin(@DEC64 long input, @DEC64 long expected, String msg) {
         @DEC64 long actual = sin64(input);
-        String outMsg = "sin64(" + msg + ") was " + actual + " instead of " + expected;
+        String outMsg = "sin64(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
         assertTrue(outMsg, equals64(expected, actual));
     }
 
@@ -239,13 +232,13 @@ public class TestMath64 {
 
     private static void test_sin(@DEC64 long input, @DEC64 long expected, String msg) {
         @DEC64 long actual = sin64(input);
-        String outMsg = "sin64(" + msg + ") was " + actual + " instead of " + expected;
+        String outMsg = "sin64(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
         assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_sqrt(@DEC64 long input, @DEC64 long expected, String msg) {
         @DEC64 long actual = sqrt(input);
-        String outMsg = "sqrt(" + msg + ") was " + actual + " instead of " + expected;
+        String outMsg = "sqrt(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
         assertTrue(outMsg, equals64(expected, actual));
     }
 

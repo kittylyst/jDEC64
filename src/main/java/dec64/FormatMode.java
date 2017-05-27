@@ -27,6 +27,9 @@ public enum FormatMode {
             },
     STANDARD("STD") {
                 public String format(@DEC64 long num) {
+                    if (isNaN(num)) {
+                        return "NaN";
+                    }
                     final StringBuilder sb = new StringBuilder();
                     byte exp = exponent(num);
                     long coeff = coefficient(num);

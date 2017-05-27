@@ -102,8 +102,10 @@ public class Math64 {
             return DEC64_ZERO;
         }
         @DEC64 long result = radicand;
+        
         while (true) {
-            @DEC64 long progress = half(add(result, divide(radicand, result)));
+            final @DEC64 long divided = divide(radicand, result);
+            @DEC64 long progress = half(add(result, divided));
             if (progress == result) {
                 return result;
             }

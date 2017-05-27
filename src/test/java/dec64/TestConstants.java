@@ -9,6 +9,7 @@ import dec64.annotations.DEC64;
  */
 public class TestConstants {
 
+    
     public static final @DEC64 long THREE = of(30, (byte) -1);
     public static final @DEC64 long FOUR = of(4, (byte) 0);
     public static final @DEC64 long FIVE = of(5000, (byte) -3);
