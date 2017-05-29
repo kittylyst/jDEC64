@@ -10,7 +10,8 @@ import static dec64.Constants64.*;
 public final class Basic64 {
 
     // Max and min coefficients - not DEC64 values - should not be neded outside the library
-    final static long MAX_PROMOTABLE = 0x7f_ffff_ffff_ffffL; // 36028797018963967L
+    final static long MAX_PROMOTABLE = 0x7f_ffff_ffff_ffffL; // 36_028_797_018_963_967L
+
     final static long MIN_PROMOTABLE = 0xff_ffff_ffff_ffffL;
     final static long DEC64_MIN_ABS_COEFFICIENT = -36028797018963968L; // 0x80_0000_0000_0000L
 
@@ -236,7 +237,7 @@ public final class Basic64 {
         byte expb = exponent(b);
 
         if (expa == expb) {
-            return divideLevel(a, b);
+            return divideLevel(level(a), level(b));
         }
         long outMult = of(1, expa - expb);
 
@@ -269,73 +270,6 @@ public final class Basic64 {
         }
 
         return of(ratio, exp);
-    }
-
-    public static @DEC64
-    long divide_translated(@DEC64 long r10, @DEC64 long r11) {
-        byte r8 = exponent(r10);
-        byte r9 = exponent(r11);
-
-        if (isNaN(r10) || isNaN(r11) || isZero(r11))
-            return DEC64_NAN;
-
-//        // while
-////divide_measure:
-//// We want to get as many bits into the quotient as possible in order to capture
-//// enough significance. But if the quotient has more than 64 bits, then there
-//// will be a hardware fault. To avoid that, we compare the magnitudes of the
-//// dividend coefficient and divisor coefficient, and use that to scale the
-//// dividend to give us a good quotient.
-//        long r0 = abs(r10);
-//        long r1 = abs(r11);
-//
-//// //    bsr     r0,r0          //r0 is the dividend most significant bit
-//// //    bsr     r1,r1          //r1 is the divisor most significant bit
-//// Scale up the dividend to be approximately 58 bits longer than the divisor.
-//// Scaling uses factors of 10, so we must convert from a bit count to a digit
-//// count by multiplication by 77/256 (approximately LN2/LN10).
-//        r1 += 58;          //we want approximately 58 bits in the raw quotient
-//        r1 -= r0;          //r1 is the number of bits to add to the dividend
-//        imul r1,
-//        77          //multiply by 77/256 to convert bits to digits
-//    shr r1,
-//        8           //r1 is the number of digits to scale the dividend
-//
-//// The largest power of 10 that can be held in an int64 is 1e18.
-//
-//    cmp r1,
-//        18          //prescale the dividend if 10**r1 won't fit
-//    jg divide_prescale // Multiply the dividend by the scale factor, and divide that 128 bit result by
-//                // the divisor.  Because of the scaling, the quotient is guaranteed to use most
-//                // of the 64 bits in r0, and never more. Reduce the final exponent by the number
-//                // of digits scaled.
-//
-//        mov r0, r10 //r0 is the dividend coefficient
-//        mov r9, power
-//        imul qword ptr[r9][r1 * 8]//r2:r0 is the dividend coefficient * 10**r1
-//        idiv r11 //r0 is the quotient
-//        sub r8, r1 //r8 is the exponent
-//        jmp pack //pack it up
-//        pad divide_prescale
-//        :
-//
-//// If the number of scaling digits is larger than 18, then we will have to
-//// scale in two steps: first prescaling the dividend to fill a register, and
-//// then repeating to fill a second register. This happens when the divisor
-//// coefficient is much larger than the dividend coefficient.
-//
-//    mov r1,
-//        58          //we want 58 bits or so in the dividend
-//    sub r1, r0 //r1 is the number of additional bits needed
-//        imul r1,
-//        77          //convert bits to digits
-//    shr r1,
-//        8           //shift 8 is cheaper than div 256
-//    mov r9, power
-//        imul r10, qword ptr[r9][r1 * 8]//multiply the dividend by power of ten
-//        sub r8, r1 //reduce the exponent
-//        jmp divide_measure //try again
-        return DEC64_NAN;
     }
 
     public static @DEC64

@@ -32,9 +32,9 @@ public class SimpleTest {
 
     @Test
     public void simpleSub() {
-        assertTrue("1 - 0.1 should equal 0.9", equals64(Basic64.of(9L, (byte)-1), subtract(DEC64_ONE, DEC64_POINT_ONE)));
-        assertTrue("700 - 0.35 should equal 699.65", 
-                equals64(Basic64.of(69965L, (byte)-2), subtract(Basic64.of(700, 0), Basic64.of(35L, (byte)-2))));
+        assertTrue("1 - 0.1 should equal 0.9", equals64(Basic64.of(9L, (byte) -1), subtract(DEC64_ONE, DEC64_POINT_ONE)));
+        assertTrue("700 - 0.35 should equal 699.65",
+                equals64(Basic64.of(69965L, (byte) -2), subtract(Basic64.of(700, 0), Basic64.of(35L, (byte) -2))));
     }
 
     @Test
@@ -54,27 +54,47 @@ public class SimpleTest {
         assertTrue("7 / 2 should equal 3.5", equals64(divide(SEVEN, DEC64_TWO), three_p_five));
         @DEC64 long zero_p_one_two_five = of(125, (byte) -3);
         assertTrue("10 / 8 should equal 0.125", equals64(divide(DEC64_ONE, EIGHT), zero_p_one_two_five));
-        assertTrue("3.5 / 2 should equal 1.75", equals64(divide(three_p_five, DEC64_TWO), of(175, (byte)-2)));
-        assertTrue("1.5 / 0.5 should equal 3", equals64(divide(of(15, (byte)-1), DEC64_HALF), THREE));
+        assertTrue("3.5 / 2 should equal 1.75", equals64(divide(three_p_five, DEC64_TWO), of(175, (byte) -2)));
+        assertTrue("1.5 / 0.5 should equal 3", equals64(divide(of(15, (byte) -1), DEC64_HALF), THREE));
         @DEC64 long third = divide(DEC64_ONE, THREE);
-        assertTrue("1 / 3 should equal 3 not "+ third, equals64(third, DEC64_THIRD));        
+        assertTrue("1 / 3 should equal 3 not " + third, equals64(third, DEC64_THIRD));
     }
 
     @Test
     @Ignore
     public void complex_divide() {
-        // 5.191176470588235 / 3.0955882352941175 == 1.676959619952494
-        
-        @DEC64 long fiveAndABit = of(5_191_176_470_588_235L, (byte)-15);
-        @DEC64 long threeAndABit = of(3_095_588_235_294_117_5L, (byte)-16);
-        @DEC64 long expected = of(1_676_959_619_952_494L, (byte)-15); 
-        
+        // 5.191 / 3.0955
+        @DEC64 long fiveAndABit = of(5_191L, (byte) -3);
+        @DEC64 long threeAndABit = of(3_095_5L, (byte) -4);
+        @DEC64 long expected = of(1_676_950_411_88L, (byte) -11);
+
         @DEC64 long actual = divide(fiveAndABit, threeAndABit);
+
+        String outMsg = "5.191 / 3.0955 was " + STANDARD.format(actual) + " (" + actual + ") instead of " + STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
+
+//        // 5.191176470 / 3.0955882352 == 1.676959619952494        
+//        fiveAndABit = of(5_191_176_470L, (byte) -9);
+//        threeAndABit = of(3_095_588_235_2L, (byte) -10);
+//        expected = of(1_676_95L, (byte) -5);
+//        actual = divide(fiveAndABit, threeAndABit);
+//
+//        outMsg = "5.191176470 / 3.0955882352 was " + STANDARD.format(actual) + " (" + actual + ") instead of " + STANDARD.format(expected);
+//        assertTrue(outMsg, equals64(expected, actual));
+
         
-        String outMsg = "5.191176470588235 / 3.0955882352941175 was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        // 5.191176470588235 / 3.0955882352941175 == 1.676959619952494        
+        fiveAndABit = of(5_191_176_470_588_235L, (byte) -15);
+        threeAndABit = of(3_095_588_235_294_117_5L, (byte) -16);
+        expected = of(1_676_959_619_952_494L, (byte) -15);
+        // FIXME
+        // FIXME The bug here is that 10 * coeff(fiveAndABit) > MAX_PROMOTABLE so we get 0
+        actual = divide(fiveAndABit, threeAndABit);
+
+        outMsg = "5.191176470588235 / 3.0955882352941175 was " + STANDARD.format(actual) + " (" + actual + ") instead of " + STANDARD.format(expected);
         assertTrue(outMsg, equals64(expected, actual));
     }
-    
+
     @Test
     public void simpleEquals() {
         // This test case only exists for demonstration purposes for newcomers
