@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static dec64.Basic64.*;
 import static dec64.Constants64.*;
+import static dec64.FormatMode.STANDARD;
 import static dec64.TestConstants.*;
 
 import org.junit.Ignore;
@@ -59,6 +60,21 @@ public class SimpleTest {
         assertTrue("1 / 3 should equal 3 not "+ third, equals64(third, DEC64_THIRD));        
     }
 
+    @Test
+    @Ignore
+    public void complex_divide() {
+        // 5.191176470588235 / 3.0955882352941175 == 1.676959619952494
+        
+        @DEC64 long fiveAndABit = of(5_191_176_470_588_235L, (byte)-15);
+        @DEC64 long threeAndABit = of(3_095_588_235_294_117_5L, (byte)-16);
+        @DEC64 long expected = of(1_676_959_619_952_494L, (byte)-15); 
+        
+        @DEC64 long actual = divide(fiveAndABit, threeAndABit);
+        
+        String outMsg = "5.191176470588235 / 3.0955882352941175 was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
+    }
+    
     @Test
     public void simpleEquals() {
         // This test case only exists for demonstration purposes for newcomers

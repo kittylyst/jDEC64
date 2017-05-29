@@ -60,6 +60,11 @@ public final class Basic64 {
     }
 
     public static @DEC64
+    long level(@DEC64 long number) {
+        return number & DEC64_COEFFICIENT_MASK;
+    }
+
+    public static @DEC64
     long reduceExponent(@DEC64 long number) {
         return of(10 * coefficient(number), (byte) (exponent(number) - 1));
     }
@@ -235,7 +240,7 @@ public final class Basic64 {
         }
         long outMult = of(1, expa - expb);
 
-        return multiply(divideLevel(a, b), outMult);
+        return multiply(divideLevel(level(a), level(b)), outMult);
     }
 
     /**
