@@ -97,23 +97,28 @@ public class Math64 {
 
     //FIXME
     public static @DEC64 long sqrt(@DEC64 long radicand) {
-    if (!isNaN(radicand) && radicand >= 0) {
-        if (coefficient(radicand) == 0) {
-            return DEC64_ZERO;
-        }
-        @DEC64 long result = radicand;
-        
-        while (true) {
-            final @DEC64 long divided = divide(radicand, result);
-            @DEC64 long progress = half(add(result, divided));
-            if (progress == result) {
-                return result;
+        if (!isNaN(radicand) && radicand >= 0) {
+            if (coefficient(radicand) == 0) {
+                return DEC64_ZERO;
             }
-            result = progress;
+            @DEC64 long result = radicand;
+
+            while (true) {
+                final @DEC64 long divided = divide(radicand, result);
+                @DEC64 long progress = half(add(result, divided));
+                if (progress == result) {
+                    return result;
+                }
+                result = progress;
+            }
+        } else {
+            return DEC64_NAN;
         }
-    } else {
-        return DEC64_NAN;
     }
-}
+
+    public static @DEC64 long acos(@DEC64 long slope) {
+        @DEC64 long result = subtract(DEC64_HALF_PI, asin64(slope));
+        return result;
+    }
 
 }
