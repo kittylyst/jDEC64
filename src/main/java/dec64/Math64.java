@@ -102,7 +102,7 @@ public class Math64 {
             return DEC64_ZERO;
         }
         @DEC64 long result = radicand;
-        
+
         while (true) {
             final @DEC64 long divided = divide(radicand, result);
             @DEC64 long progress = half(add(result, divided));
@@ -111,9 +111,17 @@ public class Math64 {
             }
             result = progress;
         }
-    } else {
-        return DEC64_NAN;
+        } else {
+            return DEC64_NAN;
+        }
     }
-}
+
+    public static @DEC64 long cos(@DEC64 long radians) {
+        return sin64(add(radians, DEC64_HALF_PI));
+    }
+
+    public static @DEC64 long tan(@DEC64 long radians) {
+        return divide(sin64(radians), cos(radians));
+    }
 
 }
