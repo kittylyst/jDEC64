@@ -95,7 +95,23 @@ public class Math64 {
         return result;
     }
 
-    //FIXME
+   public static @DEC64 long exp(@DEC64 long exponent) {
+      @DEC64 long result = inc(exponent);
+      @DEC64 long divisor = DEC64_TWO;
+      @DEC64 long term = exponent;
+      while (true) {
+         term = divide(multiply(term, exponent), divisor);
+         @DEC64 long progress = add(result, term);
+         if (equals64(result, progress)) {
+            break;
+         }
+         result = progress;
+         divisor = inc(divisor);
+      }
+      return result;
+   }
+
+  //FIXME
     public static @DEC64
     long sqrt(@DEC64 long radicand) {
         if (!isNaN(radicand) && radicand >= 0) {
@@ -132,5 +148,4 @@ public class Math64 {
     long tan(@DEC64 long radians) {
         return divide(sin64(radians), cos(radians));
     }
-
 }
