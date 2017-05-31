@@ -96,7 +96,8 @@ public class Math64 {
     }
 
     //FIXME
-    public static @DEC64 long sqrt(@DEC64 long radicand) {
+    public static @DEC64
+    long sqrt(@DEC64 long radicand) {
         if (!isNaN(radicand) && radicand >= 0) {
             if (coefficient(radicand) == 0) {
                 return DEC64_ZERO;
@@ -116,9 +117,20 @@ public class Math64 {
         }
     }
 
-    public static @DEC64 long acos(@DEC64 long slope) {
+    public static @DEC64 
+    long acos(@DEC64 long slope) {
         @DEC64 long result = subtract(DEC64_HALF_PI, asin64(slope));
         return result;
+    }
+  
+    public static @DEC64
+    long cos(@DEC64 long radians) {
+        return sin64(add(radians, DEC64_HALF_PI));
+    }
+
+    public static @DEC64
+    long tan(@DEC64 long radians) {
+        return divide(sin64(radians), cos(radians));
     }
 
 }
