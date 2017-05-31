@@ -167,6 +167,7 @@ public class TestMath64 {
     }
 
     @Test
+    @Ignore
     public void test_all_sqrt() {
 //        test_sqrt(DEC64_ZERO, DEC64_ZERO, "0");
 //        test_sqrt(DEC64_ONE, DEC64_ONE, "1");
@@ -193,7 +194,9 @@ public class TestMath64 {
     }
 
     private static void test_acos(@DEC64 long input, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = acos(input);
+        String outMsg = "acos(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_asin(@DEC64 long input, @DEC64 long expected, String msg) {
@@ -207,7 +210,9 @@ public class TestMath64 {
     }
 
     private static void test_cos(@DEC64 long input, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = cos(input);
+        String outMsg = "cos(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_exp(@DEC64 long input, @DEC64 long expected, String msg) {
@@ -245,7 +250,9 @@ public class TestMath64 {
     }
 
     private static void test_tan(@DEC64 long input, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = tan(input);
+        String outMsg = "tan(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
 }
