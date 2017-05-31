@@ -117,6 +117,12 @@ public class Math64 {
         }
     }
 
+    public static @DEC64 
+    long acos(@DEC64 long slope) {
+        @DEC64 long result = subtract(DEC64_HALF_PI, asin64(slope));
+        return result;
+    }
+  
     public static @DEC64
     long cos(@DEC64 long radians) {
         return sin64(add(radians, DEC64_HALF_PI));

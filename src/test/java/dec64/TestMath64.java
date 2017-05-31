@@ -194,7 +194,9 @@ public class TestMath64 {
     }
 
     private static void test_acos(@DEC64 long input, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = acos(input);
+        String outMsg = "acos(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_asin(@DEC64 long input, @DEC64 long expected, String msg) {
