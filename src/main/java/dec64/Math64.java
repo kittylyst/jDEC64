@@ -117,4 +117,14 @@ public class Math64 {
         }
     }
 
+    public static @DEC64
+    long cos(@DEC64 long radians) {
+        return sin64(add(radians, DEC64_HALF_PI));
+    }
+
+    public static @DEC64
+    long tan(@DEC64 long radians) {
+        return divide(sin64(radians), cos(radians));
+    }
+
 }
