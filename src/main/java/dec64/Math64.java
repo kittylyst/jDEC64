@@ -243,4 +243,42 @@ public class Math64 {
             }
         }
     }
+
+    public static @DEC64
+    long root(@DEC64 long degree, @DEC64 long radicand) {
+        @DEC64 long result;
+        degree = normal(degree);
+        if (isNaN(radicand) || isZero(degree) ||
+              degree < 0 || (radicand < 0 && (coefficient(degree) & 1) == 0)) {
+            return DEC64_NAN;
+        }
+        if (isZero(radicand)) {
+            return DEC64_ZERO;
+        }
+        if (degree == DEC64_TWO) {
+            sqrt(radicand);
+        }
+        @DEC64 long degree_minus_one = dec(degree);
+        result = DEC64_ONE;
+        @DEC64 long prosult = DEC64_NAN;
+        while (true) {
+            @DEC64 long progress = divide(
+                  add(
+                        multiply(result, degree_minus_one),
+                        divide(
+                              radicand,
+                              raise(result, degree_minus_one)
+                        )
+                  ), degree
+            );
+            if (progress == result) {
+                return result;
+            }
+            if (progress == prosult) {
+                return half(add(progress, result));
+            }
+            prosult = result;
+            result = progress;
+        }
+    }
 }

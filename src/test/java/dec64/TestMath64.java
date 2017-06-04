@@ -238,8 +238,10 @@ public class TestMath64 {
         assertTrue(outMsg, equals64(expected, actual));
     }
 
-    private static void test_root(@DEC64 long two, @DEC64 long zero, @DEC64 long zero0, String zero1) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static void test_root(@DEC64 long first, @DEC64 long second, @DEC64 long expected, String msg) {
+        @DEC64 long actual = root(first, second);
+        String outMsg = "root(" + msg + ") was " + STANDARD.format(actual) + " (" + actual + ") instead of " + STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_sin(@DEC64 long input, @DEC64 long expected, String msg) {
