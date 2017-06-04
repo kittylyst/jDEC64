@@ -225,11 +225,15 @@ public class TestMath64 {
     }
 
     private static void test_log(@DEC64 long input, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = log(input);
+        String outMsg = "log(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_raise(@DEC64 long base, @DEC64 long power, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = raise(base, power);
+        String outMsg = "raise(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_root(@DEC64 long two, @DEC64 long zero, @DEC64 long zero0, String zero1) {
