@@ -227,6 +227,18 @@ public final class Basic64 {
     }
 
     public static @DEC64
+    long divide_new(@DEC64 long a, @DEC64 long b) {
+        if (isNaN(a) || isNaN(b))
+            return DEC64_NAN;
+        if (coefficient(b) == 0)
+            return DEC64_NAN;
+        byte exp = exponent(b);
+        @DEC64 long coeff = of(coefficient(b), 0);
+
+        return multiply(a, of(divideLevel(DEC64_ONE, coeff), -exp));
+    }
+
+    public static @DEC64
     long divide(@DEC64 long a, @DEC64 long b) {
         if (isNaN(a) || isNaN(b))
             return DEC64_NAN;
