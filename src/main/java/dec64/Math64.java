@@ -215,4 +215,32 @@ public class Math64 {
         }
         return exp(multiply(log(coefficient), exponent));
     }
+
+    public static @DEC64 long atan(@DEC64 long slope) {
+        return asin64(divide(slope, sqrt(inc(multiply(slope, slope)))));
+    }
+
+    // FIXME Doesn't looks like it's been used at Doug's implementation but let's do it anyway.
+    public static @DEC64 long atan2(@DEC64 long y, @DEC64 long x) {
+        if (isZero(x)) {
+            if (isZero(y)) {
+                return DEC64_NAN;
+            } else if (y < 0) {
+                return DEC64_NHALF_PI;
+            } else {
+                return DEC64_HALF_PI;
+            }
+        } else {
+            @DEC64 long atan = atan(divide(y, x));
+            if (x < 0) {
+                if (y < 0) {
+                    return subtract(atan, DEC64_HALF_PI);
+                } else {
+                    return add(atan, DEC64_HALF_PI);
+                }
+            } else {
+                return atan;
+            }
+        }
+    }
 }

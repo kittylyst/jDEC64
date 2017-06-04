@@ -205,7 +205,9 @@ public class TestMath64 {
     }
 
     private static void test_atan(@DEC64 long input, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = atan(input);
+        String outMsg = "atan(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_cos(@DEC64 long input, @DEC64 long expected, String msg) {
