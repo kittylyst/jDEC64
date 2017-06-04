@@ -149,12 +149,38 @@ public class Math64 {
         return divide(sin64(radians), cos(radians));
     }
 
-    // FIXME : Implemented in another PR
     public static @DEC64
     long log(@DEC64 long x) {
-        return DEC64_NAN;
-    }
+        if (x <= 0 || isNaN(x)) {
+            return DEC64_NAN;
+        }
+        if (equals64(x, DEC64_ONE)) {
+            return DEC64_ZERO;
+        }
+        if (equals64(x, DEC64_HALF)) {
+            return of(-6931471805599453L, -16);
+        }
+        if (equals64(x, DEC64_E)) {
+            return DEC64_ONE;
+        }
 
+        @DEC64 long y = divide(dec(x), x);
+        @DEC64 long factor = y;
+        @DEC64 long result = factor;
+        @DEC64 long divisor = DEC64_TWO;
+
+        while (true) {
+            factor = multiply(factor, y);
+            @DEC64 long progress = add(result, divide(factor, divisor));
+            if (result == progress || progress == DEC64_NAN) {
+                break;
+            }
+            result = progress;
+            divisor = inc(divisor);
+        }
+        return result;
+    }
+  
     public static @DEC64
     long raise(@DEC64 long coefficient, @DEC64 long exponent) {
         if (isZero(exponent)) {

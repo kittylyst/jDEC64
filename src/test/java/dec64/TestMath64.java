@@ -226,7 +226,9 @@ public class TestMath64 {
     }
 
     private static void test_log(@DEC64 long input, @DEC64 long expected, String msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        @DEC64 long actual = log(input);
+        String outMsg = "log(" + msg + ") was " + STANDARD.format(actual) +" ("+ actual +") instead of "+ STANDARD.format(expected);
+        assertTrue(outMsg, equals64(expected, actual));
     }
 
     private static void test_raise(@DEC64 long base, @DEC64 long power, @DEC64 long expected, String msg) {
