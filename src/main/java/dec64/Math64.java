@@ -180,4 +180,39 @@ public class Math64 {
         }
         return result;
     }
+  
+    public static @DEC64
+    long raise(@DEC64 long coefficient, @DEC64 long exponent) {
+        if (isZero(exponent)) {
+            return DEC64_ONE;
+        }
+
+        if (exponent < 0) {
+            coefficient = divide(DEC64_ONE, coefficient);
+            exponent = neg(exponent);
+        }
+        if (isZero(coefficient)) {
+            return 0;
+        }
+        if (isNaN(coefficient)) {
+            return DEC64_NAN;
+        }
+
+        if (exponent > 0 && exponent(exponent) == 0) {
+            @DEC64 long aux = DEC64_ONE;
+            long n = coefficient(exponent);
+            if (n <= 1) {
+                return coefficient;
+            }
+            while (n > 1) {
+                if ((n & 1) != 0) {
+                    aux = multiply(aux, coefficient);
+                }
+                coefficient = multiply(coefficient, coefficient);
+                n /= 2;
+            }
+            return (n == 1) ? multiply(aux, coefficient) : aux;
+        }
+        return exp(multiply(log(coefficient), exponent));
+    }
 }
