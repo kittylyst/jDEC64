@@ -215,4 +215,70 @@ public class Math64 {
         }
         return exp(multiply(log(coefficient), exponent));
     }
+
+    public static @DEC64 long atan(@DEC64 long slope) {
+        return asin64(divide(slope, sqrt(inc(multiply(slope, slope)))));
+    }
+
+    // FIXME Doesn't looks like it's been used at Doug's implementation but let's do it anyway.
+    public static @DEC64 long atan2(@DEC64 long y, @DEC64 long x) {
+        if (isZero(x)) {
+            if (isZero(y)) {
+                return DEC64_NAN;
+            } else if (y < 0) {
+                return DEC64_NHALF_PI;
+            } else {
+                return DEC64_HALF_PI;
+            }
+        } else {
+            @DEC64 long atan = atan(divide(y, x));
+            if (x < 0) {
+                if (y < 0) {
+                    return subtract(atan, DEC64_HALF_PI);
+                } else {
+                    return add(atan, DEC64_HALF_PI);
+                }
+            } else {
+                return atan;
+            }
+        }
+    }
+
+    public static @DEC64
+    long root(@DEC64 long degree, @DEC64 long radicand) {
+        @DEC64 long result;
+        degree = normal(degree);
+        if (isNaN(radicand) || isZero(degree) ||
+              degree < 0 || (radicand < 0 && (coefficient(degree) & 1) == 0)) {
+            return DEC64_NAN;
+        }
+        if (isZero(radicand)) {
+            return DEC64_ZERO;
+        }
+        if (degree == DEC64_TWO) {
+            sqrt(radicand);
+        }
+        @DEC64 long degree_minus_one = dec(degree);
+        result = DEC64_ONE;
+        @DEC64 long prosult = DEC64_NAN;
+        while (true) {
+            @DEC64 long progress = divide(
+                  add(
+                        multiply(result, degree_minus_one),
+                        divide(
+                              radicand,
+                              raise(result, degree_minus_one)
+                        )
+                  ), degree
+            );
+            if (progress == result) {
+                return result;
+            }
+            if (progress == prosult) {
+                return half(add(progress, result));
+            }
+            prosult = result;
+            result = progress;
+        }
+    }
 }
