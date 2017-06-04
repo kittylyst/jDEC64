@@ -167,6 +167,7 @@ public class TestMath64 {
     }
 
     @Test
+    @Ignore
     public void test_all_sqrt() {
 //        test_sqrt(DEC64_ZERO, DEC64_ZERO, "0");
 //        test_sqrt(DEC64_ONE, DEC64_ONE, "1");
