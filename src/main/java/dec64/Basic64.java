@@ -10,10 +10,8 @@ import static dec64.Constants64.*;
 public final class Basic64 {
 
     // Max and min coefficients - not DEC64 values - should not be neded outside the library
-    final static long MAX_PROMOTABLE = 0x7f_ffff_ffff_ffffL; // 36_028_797_018_963_967L
-
-    final static long MIN_PROMOTABLE = 0xff_ffff_ffff_ffffL;
-    final static long DEC64_MIN_ABS_COEFFICIENT = -36028797018963968L; // 0x80_0000_0000_0000L
+    final static long DEC64_MAX_COEFFICIENT = 0x7f_ffff_ffff_ffffL; // 36_028_797_018_963_967L
+    final static long DEC64_MIN_COEFFICIENT = -36_028_797_018_963_968L; // -0x80_0000_0000_0000L
 
     private final static long DEC64_EXPONENT_MASK = 0xFFL;
     private final static long DEC64_COEFFICIENT_MASK = 0xffff_ffff_ffff_ff00L;
@@ -26,7 +24,8 @@ public final class Basic64 {
     }
 
     /**
-     *
+     * Returns the coefficient of a DEC64 number as a long. 
+     * The value will be 56 bits long and 
      * @param number
      * @return 
      */
@@ -44,6 +43,22 @@ public final class Basic64 {
 
     public static boolean overflow(long number) {
         return (number & DEC64_COEFFICIENT_OVERFLOW_MASK) != 0;
+    }
+
+    public static byte digits(@DEC64 long number) {
+        if (isNaN(number)) {
+            return -1;
+        }
+        if (isZero(number)) {
+            return 0;
+        }
+        byte out = 0;
+        long coeff = coefficient(abs(number));
+        while (coeff > 0) {
+            coeff = coeff / 10L;
+            out++;
+        }
+        return out;
     }
 
     public static @DEC64
@@ -81,7 +96,7 @@ public final class Basic64 {
         long out = number;
         long coeff = coefficient(number);
         if (exp > 0) {
-            while (exp > 0 && coeff < MAX_PROMOTABLE) {
+            while (exp > 0 && coeff < DEC64_MAX_COEFFICIENT) {
                 out = of(10 * coeff, --exp);
                 coeff = coefficient(out);
             }
@@ -226,18 +241,12 @@ public final class Basic64 {
         return of(coeff, (byte) (exponent(a) + exponent(b)));
     }
 
-    public static @DEC64
-    long divide_new(@DEC64 long a, @DEC64 long b) {
-        if (isNaN(a) || isNaN(b))
-            return DEC64_NAN;
-        if (coefficient(b) == 0)
-            return DEC64_NAN;
-        byte exp = exponent(b);
-        @DEC64 long coeff = of(coefficient(b), 0);
-
-        return multiply(a, of(divideLevel(DEC64_ONE, coeff), -exp));
-    }
-
+    /**
+     * 
+     * @param a
+     * @param b
+     * @return 
+     */
     public static @DEC64
     long divide(@DEC64 long a, @DEC64 long b) {
         if (isNaN(a) || isNaN(b))
@@ -245,43 +254,47 @@ public final class Basic64 {
         if (coefficient(b) == 0)
             return DEC64_NAN;
 
-        byte expa = exponent(a);
-        byte expb = exponent(b);
+        @DEC64 long recip = reciprocal(of(coefficient(b),0));
 
-        if (expa == expb) {
-            return divideLevel(level(a), level(b));
-        }
-        long outMult = of(1, expa - expb);
-
-        return multiply(divideLevel(level(a), level(b)), outMult);
+        return multiply(of(coefficient(a), exponent(a) - exponent(b)), recip);
     }
 
-    /**
-     * Divide two numbers that have the same exponent
-     * 
-     * @param a
-     * @param b
-     * @return 
-     */
-    static @DEC64
-    long divideLevel(@DEC64 long a, @DEC64 long b) {
-        long coeffa = coefficient(a);
-        long coeffb = coefficient(b);
-        byte exp = 0;
+    public static @DEC64
+    long reciprocal(@DEC64 long r) {
+        if (isNaN(r) || coefficient(r) == 0)
+            return DEC64_NAN;
 
-        long ratio = coeffa / coeffb;
-        long remainder = coeffa % coeffb;
-        while (remainder > 0) {
-            if (coeffa * 10 > MAX_PROMOTABLE) {
-                break;
-            }
-            coeffa *= 10;
-            exp--;
-            ratio = coeffa / coeffb;
-            remainder = coeffa % coeffb;
+        byte digits = digits(r);
+        if (digits < 1)
+            return DEC64_NAN;
+
+        byte exp = exponent(r);
+        long coeff = coefficient(r);
+        long numerator = 1L;
+        for (byte b = 0; b < digits-1; b++) {
+            numerator *= 10;
         }
 
-        return of(ratio, exp);
+        long ratio = numerator / coeff;
+        long remainder = numerator % coeff;
+        long outCoeff = ratio;
+
+        MAIN: while (remainder > 0) {
+            while (remainder < coeff) {
+                if (outCoeff * 10 > DEC64_MAX_COEFFICIENT) {
+                    break MAIN;
+                }
+                outCoeff *= 10;
+                remainder *= 10;
+                exp++; // ????
+            }
+            ratio =  remainder / coeff;
+            remainder = remainder % coeff;
+            
+            outCoeff += ratio;
+        }
+
+        return of(outCoeff,-(exp + digits - 1));
     }
 
     public static @DEC64
@@ -291,7 +304,7 @@ public final class Basic64 {
         @DEC64 long coeff = coefficient(number);
         if (coeff >= 0)
             return number;
-        if (coeff > DEC64_MIN_ABS_COEFFICIENT)
+        if (coeff > DEC64_MIN_COEFFICIENT)
             return of(-coeff, exponent(number));
         return DEC64_NAN;
     }
@@ -353,7 +366,7 @@ public final class Basic64 {
         if (isNaN(number))
             return DEC64_NAN;
         @DEC64 long coeff = coefficient(number);
-        if (coeff > DEC64_MIN_ABS_COEFFICIENT)
+        if (coeff > DEC64_MIN_COEFFICIENT)
             return of(-coeff, exponent(number));
         return DEC64_NAN;
     }
