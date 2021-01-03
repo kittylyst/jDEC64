@@ -17,3 +17,6 @@ foo*
 # ANTLR
 *.tokens
 generated-sources/
+
+#NB
+nbproject/
