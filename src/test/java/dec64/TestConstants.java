@@ -10,6 +10,7 @@ import dec64.annotations.DEC64;
 public class TestConstants {
 
     public static final @DEC64 long MINIMUM = of(1, (byte) -127);
+    public static final @DEC64 long ALMOST_ONE = of(9999999999999999L, (byte)-16);
     public static final @DEC64 long THREE = of(30, (byte) -1);
     public static final @DEC64 long FOUR = of(4, (byte) 0);
     public static final @DEC64 long FIVE = of(5000, (byte) -3);
