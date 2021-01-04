@@ -237,14 +237,15 @@ public class SimpleTest {
     }
     
     @Test
-    public void test_Less() {
-        assertFalse("3 should not be less than 3", less(TestConstants.THREE, TestConstants.THREE));
+    public void test_Less() {        
         assertTrue("4 should be less than 7", less(TestConstants.FOUR, TestConstants.SEVEN));
         assertTrue("0.9... < 1", less(TestConstants.ALMOST_ONE, Constants64.DEC64_ONE));
-        assertFalse("illegal exponent should return false", less(TestConstants.FOUR, of(20, (byte) -128)));
         assertTrue("minimum should be less than maximum", less(TestConstants.MINIMUM, TestConstants.MAXIMUM));
-        assertFalse("maximum should not be less than minimum", less(TestConstants.MAXIMUM, TestConstants.MINIMUM));
+        
+        assertFalse("3 should not be less than 3", less(TestConstants.THREE, TestConstants.THREE));
+        assertFalse("illegal exponent should return false", less(TestConstants.FOUR, of(20, (byte) -128)));
         assertFalse("Any nan value is greater than any number value", less(TestConstants.FOUR, Constants64.DEC64_NAN));
+        assertFalse("maximum should not be less than minimum", less(TestConstants.MAXIMUM, TestConstants.MINIMUM));
     }
 
 }
