@@ -235,5 +235,13 @@ public class SimpleTest {
         assertTrue("neg value of -1 should equal 1", equals64(neg(DEC64_NEGATIVE_ONE), DEC64_ONE));
 //		assertTrue("neg value of 1 should equal -1", equals64(neg(DEC64_ONE), DEC64_NEGATIVE_ONE));
     }
+    
+    @Test
+    public void test_Less() {
+        assertTrue("4 should be less than 7", less(TestConstants.FOUR, TestConstants.SEVEN));
+        assertFalse("illegal exponent should return false", less(TestConstants.FOUR, of(20, (byte) -128)));
+        assertTrue("minimum should be less than maximum", less(TestConstants.MINIMUM, TestConstants.MAXIMUM));
+        assertFalse("maximum should not be less than minimum", less(TestConstants.MAXIMUM, TestConstants.MINIMUM));
+    }
 
 }

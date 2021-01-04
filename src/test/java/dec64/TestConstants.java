@@ -9,7 +9,7 @@ import dec64.annotations.DEC64;
  */
 public class TestConstants {
 
-    
+    public static final @DEC64 long MINIMUM = of(1, (byte) -127);
     public static final @DEC64 long THREE = of(30, (byte) -1);
     public static final @DEC64 long FOUR = of(4, (byte) 0);
     public static final @DEC64 long FIVE = of(5000, (byte) -3);
@@ -17,5 +17,5 @@ public class TestConstants {
     public static final @DEC64 long SEVEN = of(7, (byte) 0);
     public static final @DEC64 long EIGHT = of(8000, (byte) -3);
     public static final @DEC64 long TEN = of(10, (byte) 0);
-
+    public static final @DEC64 long MAXIMUM = of(36028797018963967L, (byte) 127);
 }

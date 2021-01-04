@@ -1,7 +1,9 @@
 package dec64;
 
 import dec64.annotations.DEC64;
+
 import static dec64.Constants64.*;
+import static java.lang.Math.min;
 
 /**
  *
@@ -19,6 +21,9 @@ public final class Basic64 {
     private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
 
     private final static byte MAX_DIGITS = 17;
+    
+    //numbers are not allowed to use this exponent
+    private final static byte ILLEGAL_EXPO = -128;
 
     private Basic64() {
     }
@@ -413,9 +418,54 @@ public final class Basic64 {
     }/* integer */
 
 
-    public static boolean less(@DEC64 long comparahend, @DEC64 long comparator) {
-        return false;
-    }/* comparison */
+    /**
+     * Compare two dec64 numbers. If the first is less than the second, return true,
+     * otherwise return false. Any nan value is greater than any number value.
+     * 
+     * @param x left hand number
+     * @param y right hand number 
+     * @return boolean 
+     */
+    public static boolean less(@DEC64 long x, @DEC64 long y) {        
+        byte ex = exponent(x);
+        byte ey = exponent(y);
+        long cx = coefficient(x);
+        long cy = coefficient(y);
+        
+        // If the exponents are the same, then do a simple compare.
+        if (ex == ey) {
+            return (ex != ILLEGAL_EXPO && cx < cy);
+        }
+        
+        if (ex == ILLEGAL_EXPO || ey == ILLEGAL_EXPO) {
+            return false;
+        }
+        
+        int ediff = ex - ey;
+        x = x >> 8;
+        y = y >> 8;
+        if (ediff > 0) {
+            //make them conform before compare
+            long x_scaled = scale(x, ediff);
+            
+            @DEC64 long x_high = x_scaled >> 64;
+            // in the case of overflow check the sign of higher 64-bit half;
+            // otherwise compare numbers with equalized exponents
+            long over = x >> 63;
+            return (x_high == over) ? x_scaled < y : x_high < 0;
+        } else {
+            long y_scaled = scale(y, -ediff);
+            
+            @DEC64 long y_high = y_scaled >> 64;
+            long over = x >> 63;
+            return (y_high == over) ? x < y_scaled : y_high >= 0;
+        }
+    }
 
-
+    //Multiply coefficient by 10^(first exponent - second exponent)
+    private static long scale(long coeff, int ediff) {
+        //maximum cofficient is 36028797018963967. 10^18 is more
+        int exp = min(ediff, 18);
+        return (long)(coeff * Math.pow(10, exp));
+    }
 }
