@@ -426,7 +426,7 @@ public final class Basic64 {
      * @param y right hand number 
      * @return boolean 
      */
-    public static boolean less(@DEC64 long x, @DEC64 long y) {        
+    public static boolean less(@DEC64 long x, @DEC64 long y) {
         byte ex = exponent(x);
         byte ey = exponent(y);
         long cx = coefficient(x);
