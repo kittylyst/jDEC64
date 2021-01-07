@@ -429,12 +429,10 @@ public final class Basic64 {
     public static boolean less(@DEC64 long x, @DEC64 long y) {
         byte ex = exponent(x);
         byte ey = exponent(y);
-        long cx = coefficient(x);
-        long cy = coefficient(y);
         
         // If the exponents are the same, then do a simple compare.
         if (ex == ey) {
-            return (ex != ILLEGAL_EXPO && cx < cy);
+            return ex != ILLEGAL_EXPO && (coefficient(x) < coefficient(y));
         }
         
         if (ex == ILLEGAL_EXPO || ey == ILLEGAL_EXPO) {
