@@ -243,6 +243,8 @@ public class SimpleTest {
         assertTrue("minimum should be less than maximum", less(TestConstants.MINIMUM, TestConstants.MAXIMUM));
         assertTrue("0 < minimum", less(Constants64.DEC64_ZERO, TestConstants.MINIMUM));
         assertTrue("0 < 1", less(Constants64.DEC64_ZERO, Constants64.DEC64_ONE));
+        assertTrue("3 should be less than PI", less(TestConstants.THREE, Constants64.DEC64_PI));
+        
         
         assertFalse("1 should not be less than -1", less(Constants64.DEC64_ONE, Constants64.DEC64_NEGATIVE_ONE));
         assertFalse("3 should not be less than 3", less(TestConstants.THREE, TestConstants.THREE));

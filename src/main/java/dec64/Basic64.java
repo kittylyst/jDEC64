@@ -451,14 +451,12 @@ public final class Basic64 {
             @DEC64 long x_high = x_scaled >> 64;
             // in the case of overflow check the sign of higher 64-bit half;
             // otherwise compare numbers with equalized exponents
-            long over = x >> 63;
-            return (x_high == over) ? x_scaled < y : x_high < 0;
+            return (x_high == x_scaled) ? x_scaled < y : x_high < 0;
         } else {
             long y_scaled = scale(y, -ediff);
             
             @DEC64 long y_high = y_scaled >> 64;
-            long over = x >> 63;
-            return (y_high == over) ? x < y_scaled : y_high >= 0;
+            return (y_high == y_scaled) ? x < y_scaled : y_high >= 0;
         }
     }
 
