@@ -439,9 +439,10 @@ public final class Basic64 {
             return false;
         }
         
-        int ediff = ex - ey;
         x = x >> 8;
         y = y >> 8;
+        
+        int ediff = ex - ey;
         if (ediff > 0) {
             //make them conform before compare
             long x_scaled = scale(x, ediff);
