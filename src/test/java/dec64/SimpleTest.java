@@ -16,11 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SimpleTest {
 
     @Test
-    public void simpleNew() {
-        assertFalse(isNaN(of(100L, 129L)), "Should be able to increase coefficient");
-    }
-    
-    @Test
     public void simpleAdd() {
         assertEquals(DEC64_ZERO, add(DEC64_ONE, DEC64_NEGATIVE_ONE), "-1 + 1 should equal 0");
 

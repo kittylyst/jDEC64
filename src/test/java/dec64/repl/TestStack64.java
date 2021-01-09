@@ -53,16 +53,14 @@ public class TestStack64 {
     public void empty_stack_should_throw_on_peek() {
         assertThrows(EmptyStackException.class, () -> {
             stack.peek();
-        });
-        fail("Empty stack should throw on peek");
+        }, "Empty stack should throw on peek");
     }
 
     @Test
     public void empty_stack_should_throw_on_pop() {
         assertThrows(EmptyStackException.class, () -> {
             stack.pop();
-        });
-        fail("Empty stack should throw on pop");
+        }, "Empty stack should throw on pop");
     }
 
     @Test
@@ -71,8 +69,7 @@ public class TestStack64 {
         stack.pop();
         assertThrows(EmptyStackException.class, () -> {
             stack.pop();
-        });
-        fail("Empty stack should throw on underflow");
+        }, "Empty stack should throw on underflow");
     }
 
     @Test
@@ -81,8 +78,7 @@ public class TestStack64 {
             for (int i = 0; i < 1000; i++) {
                 stack.push(Basic64.of(i, 0));
             }
-        });
-        fail("Stack should throw on overflow");
+        }, "Stack should throw on overflow");
     }
 
 }
