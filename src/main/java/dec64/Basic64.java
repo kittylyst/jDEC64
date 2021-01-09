@@ -461,7 +461,7 @@ public final class Basic64 {
 
     //Multiply coefficient by 10^(first exponent - second exponent)
     private static long scale(long coeff, int ediff) {
-        //maximum cofficient is 36028797018963967. 10^18 is more
+        //maximum coefficient is 36028797018963967. 10^18 is more
         int exp = min(ediff, 18);
         return (long)(coeff * Math.pow(10, exp));
     }
