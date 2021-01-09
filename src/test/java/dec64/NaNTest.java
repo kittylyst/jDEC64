@@ -1,9 +1,10 @@
 package dec64;
 
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import static dec64.Basic64.*;
 import static dec64.Constants64.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -27,17 +28,17 @@ public class NaNTest {
      */
     @Test
     public void NaN_input_gives_NaN() {
-       assertTrue("abs(nan) should be NaN", isNaN(abs(DEC64_NAN))); 
-       assertTrue("ceiling(nan) should be NaN", isNaN(ceiling(DEC64_NAN))); 
-       assertTrue("dec(nan) should be NaN", isNaN(dec(DEC64_NAN))); 
-       assertTrue("floor(nan) should be NaN", isNaN(floor(DEC64_NAN))); 
-       assertTrue("half(nan) should be NaN", isNaN(half(DEC64_NAN))); 
-       assertTrue("inc(nan) should be NaN", isNaN(inc(DEC64_NAN))); 
+       assertTrue(isNaN(abs(DEC64_NAN)), "abs(nan) should be NaN");
+       assertTrue(isNaN(ceiling(DEC64_NAN)), "ceiling(nan) should be NaN");
+       assertTrue(isNaN(dec(DEC64_NAN)), "dec(nan) should be NaN");
+       assertTrue(isNaN(floor(DEC64_NAN)), "floor(nan) should be NaN");
+       assertTrue(isNaN(half(DEC64_NAN)), "half(nan) should be NaN");
+       assertTrue(isNaN(inc(DEC64_NAN)), "inc(nan) should be NaN");
 //       assertTrue("integer(nan) should be NaN", isNaN(integer(DEC64_NAN))); 
-       assertTrue("neg(nan) should be NaN", isNaN(neg(DEC64_NAN))); 
-       assertTrue("normal(nan) should be NaN", isNaN(normal(DEC64_NAN))); 
-       assertTrue("not(nan) should be NaN", isNaN(not(DEC64_NAN))); 
-       assertTrue("signum(nan) should be NaN", isNaN(signum(DEC64_NAN))); 
+       assertTrue(isNaN(neg(DEC64_NAN)), "neg(nan) should be NaN");
+       assertTrue(isNaN(normal(DEC64_NAN)),"normal(nan) should be NaN");
+       assertTrue(isNaN(not(DEC64_NAN)), "not(nan) should be NaN");
+       assertTrue(isNaN(signum(DEC64_NAN)), "signum(nan) should be NaN");
     }
     
     /*
