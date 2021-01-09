@@ -13,6 +13,7 @@ foo*
 **/Scratch*.java
 *.ser
 .idea
+*.iml
 
 # ANTLR
 *.tokens
