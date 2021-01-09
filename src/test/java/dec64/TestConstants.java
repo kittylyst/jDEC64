@@ -10,6 +10,12 @@ import dec64.annotations.DEC64;
 public class TestConstants {
 
     public static final @DEC64 long MINIMUM = of(1, (byte) -127);
+    /** the smallest number addable to 1 */
+    public static final @DEC64 long EPSILON = of(1, (byte) -16);
+    public static final @DEC64 long NEGATIVE_EPSILON = of(-1, (byte) -16);
+    public static final @DEC64 long TWO_EPSILON = of(2, (byte)-16);
+    /** 0.01 */
+    public static final @DEC64 long CENT = of(1, (byte) -2);
     public static final @DEC64 long ALMOST_ONE = of(9999999999999999L, (byte)-16);
     public static final @DEC64 long THREE = of(30, (byte) -1);
     public static final @DEC64 long FOUR = of(4, (byte) 0);
