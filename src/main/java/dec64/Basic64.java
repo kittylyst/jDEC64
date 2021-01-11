@@ -1,3 +1,26 @@
+/*
+ * The MIT License
+ *
+ * Copyright 2021 Ben Evans.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package dec64;
 
 import dec64.annotations.DEC64;
@@ -21,7 +44,7 @@ public final class Basic64 {
     private final static long DEC64_COEFFICIENT_OVERFLOW_MASK = 0x7F00_0000_0000_0000L;
 
     private final static byte MAX_DIGITS = 17;
-    
+
     //numbers are not allowed to use this exponent
     private final static byte ILLEGAL_EXPO = -128;
 
@@ -29,10 +52,11 @@ public final class Basic64 {
     }
 
     /**
-     * Returns the coefficient of a DEC64 number as a long. 
-     * The value will be 56 bits long and 
+     * Returns the coefficient of a DEC64 number as a long. The value will be 56
+     * bits long and
+     *
      * @param number
-     * @return 
+     * @return
      */
     public static long coefficient(@DEC64 long number) {
         return number > 0 ? number >> 8 : -(-number >> 8);
@@ -68,15 +92,50 @@ public final class Basic64 {
 
     public static @DEC64
     long of(long coeff, long exponent) {
-        if (exponent > 127 || exponent < -127)
+        if (exponent > 127 || exponent < -127) {
             return DEC64_NAN;
+        }
         return of(coeff, (byte) exponent);
     }
 
+    /**
+     * {@code
+     * NAN = Constants64.DEC64_NAN (128L)
+     * NAN = Basic64.of(-1, -1)
+     * NAN = Basic64.of(1, 1)
+     * NAN = Basic64.of(-1, 1)
+     * 511L = Basic64.of(1, -1)
+     * NAN = Basic64.of(-2, -2)
+     * NAN = Basic64.of(-2, 1)
+     * NAN = Basic64.of(-256, 1)
+     * NAN = Basic64.of(-256, 1)
+     * 0L = Basic64.of(Long.MIN_VALUE, 0)
+     * NAN = Basic64.of(Long.MAX_VALUE, 0)
+     * NAN = Basic64.of(Long.MIN_VALUE, 1)
+     * NAN = Basic64.of(Long.MAX_VALUE, 1)
+     * 255L = Basic64.of(Long.MIN_VALUE, -1)
+     * NAN = Basic64.of(Long.MAX_VALUE, -1)
+     * 2L = Basic64.of(Long.MIN_VALUE, 2)
+     * NAN = Basic64.of(Long.MAX_VALUE, 2)
+     * 254L = Basic64.of(Long.MIN_VALUE, -2)
+     * NAN = Basic64.of(Long.MAX_VALUE, -2)
+     * 127L = Basic64.of(0, Byte.MIN_VALUE)
+     * NAN = Basic64.of(0, Byte.MAX_VALUE)
+     * 384L = Basic64.of(1, Byte.MIN_VALUE)
+     * 383L = Basic64.of(1, Byte.MAX_VALUE)
+     * NAN = Basic64.of(-1, Byte.MIN_VALUE)
+     * NAN = Basic64.of(-1, Byte.MAX_VALUE)
+     * 640L = Basic64.of(1, Byte.MIN_VALUE)
+     * 639L = Basic64.of(1, Byte.MAX_VALUE)
+     * NAN = Basic64.of(-2, Byte.MIN_VALUE)
+     * NAN = Basic64.of(-2, Byte.MAX_VALUE)
+     * }
+     */
     public static @DEC64
     long of(long coeff, byte exponent) {
-        if (overflow(coeff))
+        if (overflow(coeff)) {
             return DEC64_NAN;
+        }
         return (coeff << 8) | exponentAsLong(exponent);
     }
 
@@ -92,11 +151,13 @@ public final class Basic64 {
 
     public static @DEC64
     long canonical(@DEC64 long number) {
-        if (isNaN(number))
+        if (isNaN(number)) {
             return DEC64_NAN;
+        }
         byte exp = exponent(number);
-        if (exp == 127 || exp == 0)
+        if (exp == 127 || exp == 0) {
             return number;
+        }
 
         long out = number;
         long coeff = coefficient(number);
@@ -132,8 +193,9 @@ public final class Basic64 {
     }
 
     public static boolean equals64(@DEC64 long a, @DEC64 long b) {
-        if (isNaN(a) || isNaN(b))
+        if (isNaN(a) || isNaN(b)) {
             return false; // NaN != NaN
+        }
         byte expa = exponent(a);
         byte expb = exponent(b);
         if (expa == expb) {
@@ -142,7 +204,8 @@ public final class Basic64 {
 
         // Slow path - first reduce the smaller exponent
         if (expa > expb) {
-            @DEC64 long lastA = a;
+            @DEC64
+            long lastA = a;
             while (!isNaN(a)) {
                 lastA = a;
                 a = reduceExponent(a);
@@ -151,7 +214,8 @@ public final class Basic64 {
                 }
             }
         } else {
-            @DEC64 long lastB = b;
+            @DEC64
+            long lastB = b;
             while (!isNaN(b)) {
                 lastB = b;
                 b = reduceExponent(b);
@@ -166,8 +230,9 @@ public final class Basic64 {
 
     public static @DEC64
     long add(@DEC64 long a, @DEC64 long b) {
-        if (isNaN(a) || isNaN(b))
+        if (isNaN(a) || isNaN(b)) {
             return DEC64_NAN;
+        }
         byte expa = exponent(a);
         byte expb = exponent(b);
         if (expa == expb) {
@@ -177,7 +242,8 @@ public final class Basic64 {
 
         // Slow path - first reduceExponent the smaller exponent
         if (expa > expb) {
-            @DEC64 long lastA = a;
+            @DEC64
+            long lastA = a;
             while (!isNaN(a)) {
                 lastA = a;
                 a = reduceExponent(a);
@@ -190,7 +256,8 @@ public final class Basic64 {
             // Now we must try to inflate b's exponent to match
             a = lastA;
         } else {
-            @DEC64 long lastB = b;
+            @DEC64
+            long lastB = b;
             while (!isNaN(b)) {
                 lastB = b;
                 b = reduceExponent(b);
@@ -207,16 +274,18 @@ public final class Basic64 {
 
     public static @DEC64
     long subtract(@DEC64 long a, @DEC64 long b) {
-        if (isNaN(a) || isNaN(b))
+        if (isNaN(a) || isNaN(b)) {
             return DEC64_NAN;
+        }
         a = canonical(a);
         b = canonical(b);
         byte expa = exponent(a);
         byte expb = exponent(b);
         if (expa == expb) {
             long coeff = coefficient(a) - coefficient(b);
-            if (overflow(coeff))
+            if (overflow(coeff)) {
                 return DEC64_NAN;
+            }
             return of(coeff, expa);
         }
         if (expa > expb) {
@@ -238,45 +307,52 @@ public final class Basic64 {
 
     public static @DEC64
     long multiply(@DEC64 long a, @DEC64 long b) {
-        if (isNaN(a) || isNaN(b))
+        if (isNaN(a) || isNaN(b)) {
             return DEC64_NAN;
+        }
         final long coeff = coefficient(a) * coefficient(b);
-        if (overflow(coeff))
+        if (overflow(coeff)) {
             return DEC64_NAN;
+        }
         return of(coeff, (byte) (exponent(a) + exponent(b)));
     }
 
     /**
-     * 
+     *
      * @param a
      * @param b
-     * @return 
+     * @return
      */
     public static @DEC64
     long divide(@DEC64 long a, @DEC64 long b) {
-        if (isNaN(a) || isNaN(b))
+        if (isNaN(a) || isNaN(b)) {
             return DEC64_NAN;
-        if (coefficient(b) == 0)
+        }
+        if (coefficient(b) == 0) {
             return DEC64_NAN;
+        }
 
-        @DEC64 long recip = reciprocal(of(coefficient(b),0));
+        @DEC64
+        long recip = reciprocal(of(coefficient(b), 0));
 
         return multiply(of(coefficient(a), exponent(a) - exponent(b)), recip);
     }
 
     public static @DEC64
     long reciprocal(@DEC64 long r) {
-        if (isNaN(r) || coefficient(r) == 0)
+        if (isNaN(r) || coefficient(r) == 0) {
             return DEC64_NAN;
+        }
 
         byte digits = digits(r);
-        if (digits < 1)
+        if (digits < 1) {
             return DEC64_NAN;
+        }
 
         byte exp = exponent(r);
         long coeff = coefficient(r);
         long numerator = 1L;
-        for (byte b = 0; b < digits-1; b++) {
+        for (byte b = 0; b < digits - 1; b++) {
             numerator *= 10;
         }
 
@@ -284,7 +360,8 @@ public final class Basic64 {
         long remainder = numerator % coeff;
         long outCoeff = ratio;
 
-        MAIN: while (remainder > 0) {
+        MAIN:
+        while (remainder > 0) {
             while (remainder < coeff) {
                 if (outCoeff * 10 > DEC64_MAX_COEFFICIENT) {
                     break MAIN;
@@ -293,24 +370,28 @@ public final class Basic64 {
                 remainder *= 10;
                 exp++; // ????
             }
-            ratio =  remainder / coeff;
+            ratio = remainder / coeff;
             remainder = remainder % coeff;
-            
+
             outCoeff += ratio;
         }
 
-        return of(outCoeff,-(exp + digits - 1));
+        return of(outCoeff, -(exp + digits - 1));
     }
 
     public static @DEC64
     long abs(@DEC64 long number) {
-        if (isNaN(number))
+        if (isNaN(number)) {
             return DEC64_NAN;
-        @DEC64 long coeff = coefficient(number);
-        if (coeff >= 0)
+        }
+        @DEC64
+        long coeff = coefficient(number);
+        if (coeff >= 0) {
             return number;
-        if (coeff > DEC64_MIN_COEFFICIENT)
+        }
+        if (coeff > DEC64_MIN_COEFFICIENT) {
             return of(-coeff, exponent(number));
+        }
         return DEC64_NAN;
     }
 
@@ -330,8 +411,9 @@ public final class Basic64 {
 
     public static @DEC64
     long half(@DEC64 long dividend) {
-        if (isNaN(dividend))
+        if (isNaN(dividend)) {
             return DEC64_NAN;
+        }
         long coeff = coefficient(dividend);
         byte exp = exponent(dividend);
         // FIXME If coeff is large, this might not work
@@ -358,8 +440,9 @@ public final class Basic64 {
 
     public static @DEC64
     long modulo(@DEC64 long dividend, @DEC64 long divisor) {
-        if (coefficient(divisor) == 0)
+        if (coefficient(divisor) == 0) {
             return DEC64_NAN;
+        }
 
         // Modulo. It produces the same result as
         return subtract(dividend, multiply(integer_divide(dividend, divisor), divisor));
@@ -368,11 +451,14 @@ public final class Basic64 {
 
     public static @DEC64
     long neg(@DEC64 long number) {
-        if (isNaN(number))
+        if (isNaN(number)) {
             return DEC64_NAN;
-        @DEC64 long coeff = coefficient(number);
-        if (coeff > DEC64_MIN_COEFFICIENT)
+        }
+        @DEC64
+        long coeff = coefficient(number);
+        if (coeff > DEC64_MIN_COEFFICIENT) {
             return of(-coeff, exponent(number));
+        }
         return DEC64_NAN;
     }
 
@@ -405,8 +491,9 @@ public final class Basic64 {
 
     public static @DEC64
     long integer_divide(@DEC64 long dividend, @DEC64 long divisor) {
-        if (coefficient(divisor) == 0)
+        if (coefficient(divisor) == 0) {
             return DEC64_NAN;
+        }
         // FIXME
         return 0;
     }/* quotient */
@@ -419,42 +506,45 @@ public final class Basic64 {
 
 
     /**
-     * Compare two dec64 numbers. If the first is less than the second, return true,
-     * otherwise return false. Any nan value is greater than any number value.
-     * 
+     * Compare two dec64 numbers. If the first is less than the second, return
+     * true, otherwise return false. Any nan value is greater than any number
+     * value.
+     *
      * @param x left hand number
-     * @param y right hand number 
-     * @return boolean 
+     * @param y right hand number
+     * @return boolean
      */
     public static boolean less(@DEC64 long x, @DEC64 long y) {
         byte ex = exponent(x);
         byte ey = exponent(y);
-        
+
         // If the exponents are the same, then do a simple compare.
         if (ex == ey) {
             return ex != ILLEGAL_EXPO && (coefficient(x) < coefficient(y));
         }
-        
+
         if (ex == ILLEGAL_EXPO || ey == ILLEGAL_EXPO) {
             return false;
         }
-        
+
         x = x >> 8;
         y = y >> 8;
-        
+
         int ediff = ex - ey;
         if (ediff > 0) {
             //make them conform before compare
             long x_scaled = scale(x, ediff);
-            
-            @DEC64 long x_high = x_scaled >> 64;
+
+            @DEC64
+            long x_high = x_scaled >> 64;
             // in the case of overflow check the sign of higher 64-bit half;
             // otherwise compare numbers with equalized exponents
             return (x_high == x_scaled) ? x_scaled < y : x_high < 0;
         } else {
             long y_scaled = scale(y, -ediff);
-            
-            @DEC64 long y_high = y_scaled >> 64;
+
+            @DEC64
+            long y_high = y_scaled >> 64;
             return (y_high == y_scaled) ? x < y_scaled : y_high >= 0;
         }
     }
@@ -463,6 +553,6 @@ public final class Basic64 {
     private static long scale(long coeff, int ediff) {
         //maximum coefficient is 36028797018963967. 10^18 is more
         int exp = min(ediff, 18);
-        return (long)(coeff * Math.pow(10, exp));
+        return (long) (coeff * Math.pow(10, exp));
     }
 }
