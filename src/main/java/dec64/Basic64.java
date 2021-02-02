@@ -22,9 +22,6 @@ public final class Basic64 {
 
     private final static byte MAX_DIGITS = 17;
     
-    //numbers are not allowed to use this exponent
-    private final static byte ILLEGAL_EXPO = -128;
-
     private Basic64() {
     }
 
@@ -396,11 +393,59 @@ public final class Basic64 {
         return DEC64_NAN;
     }/* signature */
 
+    public static @DEC64
+    long ceiling(@DEC64 long number) {
+        return largestInt(number, 1);
+    }
 
     public static @DEC64
-    long floor(@DEC64 long dividend) {
-        return DEC64_NAN;
-    }/* integer */
+    long floor(@DEC64 long number) {
+        return largestInt(number, -1);
+    }
+    
+    /**
+     * Produces the largest integer that is less than or equal to 'number' 
+     * (roundDir == -1) or greater than or equal to 'number' (roundDir == 1).
+     * In the result, the exponent will be greater than or equal to zero unless 
+     * it is nan. Numbers with positive exponents will not be modified, even if 
+     * the numbers are outside of the safe integer range.
+     * 
+     * @param number Dec64 number
+     * @param roundDir rounding direction
+     * @return rounded number
+     **/
+    private static @DEC64 long largestInt(@DEC64 long number, int roundDir) {
+        if (isNaN(number)) {
+            return DEC64_NAN;
+        }
+        int e = exponent(number);
+        @DEC64 long x = number >> 8;
+        if (x == 0) {
+            return 0;
+        }
+        if (e >= 0) {
+            return number;
+        }
+
+        e = -e;
+        long rem;
+        if (e < 17) {
+            double p = Math.pow(10, e);
+            long scaled = (long)(x / p);
+            rem = (long)(x - scaled*p);
+            if (rem == 0) {
+                return scaled << 8;
+            }
+            x = scaled;
+        } else {
+            // deal with a micro number
+            rem = x;
+            x = 0;
+        }
+        int multiplier = ((rem ^ roundDir) >= 0) ? 1 : 0;
+        int delta = multiplier * roundDir;
+        return (x + delta) << 8;
+    }
 
 
     public static @DEC64
@@ -410,12 +455,6 @@ public final class Basic64 {
         // FIXME
         return 0;
     }/* quotient */
-
-
-    public static @DEC64
-    long ceiling(@DEC64 long number) {
-        return DEC64_NAN;
-    }/* integer */
 
 
     /**
@@ -432,10 +471,10 @@ public final class Basic64 {
         
         // If the exponents are the same, then do a simple compare.
         if (ex == ey) {
-            return ex != ILLEGAL_EXPO && (coefficient(x) < coefficient(y));
+            return ex != Byte.MIN_VALUE && (coefficient(x) < coefficient(y));
         }
         
-        if (ex == ILLEGAL_EXPO || ey == ILLEGAL_EXPO) {
+        if (isNaN(ex) || isNaN(ey)) {
             return false;
         }
         
@@ -445,17 +484,17 @@ public final class Basic64 {
         int ediff = ex - ey;
         if (ediff > 0) {
             //make them conform before compare
-            long x_scaled = scale(x, ediff);
+            long xScaled = scale(x, ediff);
             
-            @DEC64 long x_high = x_scaled >> 64;
+            @DEC64 long x_high = xScaled >> 64;
             // in the case of overflow check the sign of higher 64-bit half;
             // otherwise compare numbers with equalized exponents
-            return (x_high == x_scaled) ? x_scaled < y : x_high < 0;
+            return (x_high == xScaled) ? xScaled < y : x_high < 0;
         } else {
-            long y_scaled = scale(y, -ediff);
+            long yScaled = scale(y, -ediff);
             
-            @DEC64 long y_high = y_scaled >> 64;
-            return (y_high == y_scaled) ? x < y_scaled : y_high >= 0;
+            @DEC64 long y_high = yScaled >> 64;
+            return (y_high == yScaled) ? x < yScaled : y_high >= 0;
         }
     }
 

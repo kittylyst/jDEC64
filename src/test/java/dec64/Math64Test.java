@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author kittylyst
  */
-public class TestMath64 {
+class Math64Test {
 
     static private @DEC64 long nannan;
     static private @DEC64 long zip;
@@ -32,7 +32,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_acos() {
+    void test_all_acos() {
         test_acos(DEC64_NEGATIVE_ONE, DEC64_PI, "-1");
         test_acos(DEC64_ZERO, DEC64_HALF_PI, "0");
         test_acos(epsilon, of(15707963267948965L, -16), "epsilon");
@@ -44,7 +44,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_asin() {
+    void test_all_asin() {
 //        test_asin(DEC64_NEGATIVE_ONE, neg(DEC64_HALF_PI), "-1");
         test_asin(DEC64_ZERO, DEC64_ZERO, "0");
         test_asin(epsilon, epsilon, "epsilon");
@@ -56,7 +56,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_atan() {
+    void test_all_atan() {
         test_atan(DEC64_NEGATIVE_ONE, of(-7853981633974483L, -16), "-1");
         test_atan(DEC64_ZERO, DEC64_ZERO, "0");
         test_atan(cent, of(9999666686665238L, -18), "1/100");
@@ -70,7 +70,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_cos() {
+    void test_all_cos() {
         test_cos(DEC64_ZERO, DEC64_ONE, "0");
         test_cos(cent, of(99995000041666528L, -17), "0.01");
         test_cos(DEC64_PI, DEC64_NEGATIVE_ONE, "pi");
@@ -80,7 +80,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_exp() {
+    void test_all_exp() {
         test_exp(DEC64_ZERO, DEC64_ONE, "0");
         test_exp(cent, of(10100501670841681L, -16), "0.01");
         test_exp(half, of(16487212707001281L, -16), "0.5");
@@ -91,7 +91,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_factorial() {
+    void test_all_factorial() {
         test_factorial(DEC64_ZERO, DEC64_ONE, "0!");
         test_factorial(DEC64_ONE, DEC64_ONE, "1!");
         test_factorial(of(18, 0), of(6402373705728000L, 0), "18!");
@@ -108,7 +108,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_log() {
+    void test_all_log() {
         test_log(DEC64_ZERO, DEC64_NAN, "0");
         test_log(cent, of(-4605170185988091L, -16), "0.01");
         test_log(half, of(-6931471805599453L, -16), "1/2");
@@ -122,7 +122,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_raise() {
+    void test_all_raise() {
         test_raise(DEC64_E, DEC64_ZERO, DEC64_ONE, "e^0");
         test_raise(DEC64_E, cent, of(10100501670841681L, -16), "e^0.01");
         test_raise(DEC64_E, half, of(16487212707001281L, -16), "e^0.5");
@@ -135,7 +135,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_root() {
+    void test_all_root() {
         test_root(DEC64_TWO, DEC64_ZERO, DEC64_ZERO, "2|zero");
         test_root(THREE, DEC64_ZERO, DEC64_ZERO, "3|zero");
         test_root(THREE, half, of(7937005259840997L, -16), "3|1/2");
@@ -151,7 +151,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_sin() {
+    void test_all_sin() {
         test_sin(DEC64_ZERO, DEC64_ZERO, "0");
         test_sin(epsilon, epsilon, "epsilon");
         test_sin(cent, of(9999833334166665L, -18), "0.01");
@@ -169,7 +169,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_sqrt() {
+    void test_all_sqrt() {
 //        test_sqrt(DEC64_ZERO, DEC64_ZERO, "0");
 //        test_sqrt(DEC64_ONE, DEC64_ONE, "1");
         test_sqrt(of(16, 0), of(4, 0), "16");
@@ -184,7 +184,7 @@ public class TestMath64 {
 
     @Test
     @Disabled
-    public void test_all_tan() {
+    void test_all_tan() {
         test_tan(DEC64_ZERO, DEC64_ZERO, "0");
         test_tan(cent, of(10000333346667206L, -18), "0.01");
         test_tan(half, of(5463024898437905L, -16), "1/2");

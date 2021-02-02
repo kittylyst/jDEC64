@@ -8,11 +8,14 @@ import dec64.annotations.DEC64;
  * @author ben
  */
 public class TestConstants {
+    
+    public static final int ZIP = 250;
 
     public static final @DEC64 long MINIMUM = of(1, (byte) -127);
+    public static final @DEC64 long NO_NAN = of(1, (byte)128);
     /** the smallest number addable to 1 */
     public static final @DEC64 long EPSILON = of(1, (byte) -16);
-    public static final @DEC64 long NEGATIVE_EPSILON = of(-1, (byte) -16);
+    public static final @DEC64 long NEGATIVE_EPSILON = of(-1, -16L);
     public static final @DEC64 long TWO_EPSILON = of(2, (byte)-16);
     /** 0.01 */
     public static final @DEC64 long CENT = of(1, (byte) -2);
