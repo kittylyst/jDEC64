@@ -22,6 +22,9 @@ public final class Basic64 {
 
     private final static byte MAX_DIGITS = 17;
     
+    /**This value should not be used as an exponent.*/
+    private final static byte ILLEGAL_EXPONENT = Byte.MIN_VALUE;
+    
     private Basic64() {
     }
 
@@ -471,7 +474,7 @@ public final class Basic64 {
         
         // If the exponents are the same, then do a simple compare.
         if (ex == ey) {
-            return ex != Byte.MIN_VALUE && (coefficient(x) < coefficient(y));
+            return ex != ILLEGAL_EXPONENT && (coefficient(x) < coefficient(y));
         }
         
         if (isNaN(ex) || isNaN(ey)) {
