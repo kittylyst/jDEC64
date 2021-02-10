@@ -1,13 +1,7 @@
 package dec64.perf;
 
-/**
- *
- * @author ben
- */
+/** @author ben */
 public class PerfScanner {
 
-    public static void main(String[] args) {
-        
-    }
-    
+  public static void main(String[] args) {}
 }

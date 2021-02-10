@@ -22,5 +22,10 @@ generated-sources/
 #NB
 nbproject/
 
+<<<<<<< HEAD
+#vscode
+.vscode/
+=======
 #VS Code
 .vscode
+>>>>>>> master
