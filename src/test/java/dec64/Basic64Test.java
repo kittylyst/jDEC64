@@ -301,14 +301,19 @@ class Base64Test {
     assertEquals(DEC64_NAN, ceiling(NO_NAN), "It should return NAN for NO_NAN argument");
     assertEquals(DEC64_ZERO, ceiling(DEC64_ZERO), "It should return zero for zero argument");
     assertEquals(DEC64_ZERO, ceiling(ZIP), "It should return zero for almost zero argument");
-    
+
     assertEquals(DEC64_ONE, ceiling(MINIMUM), "It should return one for minimum argument");
     assertEquals(DEC64_ONE, ceiling(EPSILON), "It should return one for epsilon argument");
     assertEquals(DEC64_ONE, ceiling(CENT), "It should return one for cent argument");
     assertEquals(DEC64_ONE, ceiling(DEC64_HALF), "It should return one for half argument");
-    
-    // assertEquals(DEC64_ZERO, ceiling(NEGATIVE_EPSILON), "It should return zero for negative
-    // epsilon argument");
+  }
+
+  @Disabled("FIXME")
+  @Test
+  @DisplayName("It should return smallest number that is greater or equal to negative epsilon")
+  void testCeiling_NegativeEpsilon() {
+    assertEquals(
+        DEC64_ZERO, ceiling(NEGATIVE_EPSILON), "It should return zero for negative epsilon");
   }
 
   @Test
@@ -322,8 +327,15 @@ class Base64Test {
     assertEquals(DEC64_ZERO, floor(MINIMUM), "It should return zero for minimum argument");
     assertEquals(DEC64_ZERO, floor(CENT), "It should return zero for cent argument");
     assertEquals(DEC64_ZERO, floor(DEC64_HALF), "It should return zero for half argument");
+  }
 
-    // assertEquals(DEC64_NEGATIVE_ONE, floor(NEGATIVE_EPSILON), "It should return negative one for
-    // negative epsilon argument");
+  @Disabled("FIXME")
+  @Test
+  @DisplayName("It should return smallest number that is smaller or equal to negative epsilon")
+  void testFloor_NegativeEpsilon() {
+    assertEquals(
+        DEC64_NEGATIVE_ONE,
+        floor(NEGATIVE_EPSILON),
+        "It should return negative one for negative epsilon");
   }
 }
