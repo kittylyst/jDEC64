@@ -24,3 +24,6 @@ nbproject/
 
 #VS Code
 .vscode
+
+#git
+.orig
