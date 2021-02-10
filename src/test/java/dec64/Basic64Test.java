@@ -301,13 +301,14 @@ class Base64Test {
     assertEquals(DEC64_NAN, ceiling(NO_NAN), "It should return NAN for NO_NAN argument");
     assertEquals(DEC64_ZERO, ceiling(DEC64_ZERO), "It should return zero for zero argument");
     assertEquals(DEC64_ZERO, ceiling(ZIP), "It should return zero for almost zero argument");
-
-    // assertEquals(DEC64_ZERO, ceiling(NEGATIVE_EPSILON), "It should return zero for negative
-    // epsilon argument");
+    
     assertEquals(DEC64_ONE, ceiling(MINIMUM), "It should return one for minimum argument");
     assertEquals(DEC64_ONE, ceiling(EPSILON), "It should return one for epsilon argument");
     assertEquals(DEC64_ONE, ceiling(CENT), "It should return one for cent argument");
     assertEquals(DEC64_ONE, ceiling(DEC64_HALF), "It should return one for half argument");
+    
+    // assertEquals(DEC64_ZERO, ceiling(NEGATIVE_EPSILON), "It should return zero for negative
+    // epsilon argument");
   }
 
   @Test
