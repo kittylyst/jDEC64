@@ -21,3 +21,6 @@ generated-sources/
 
 #NB
 nbproject/
+
+#VS Code
+.vscode
