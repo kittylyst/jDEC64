@@ -486,15 +486,15 @@ public final class Basic64 {
       // make them conform before compare
       long xScaled = scale(x, ediff);
 
-      @DEC64 long x_high = xScaled >> 64;
+      @DEC64 long xHigh = xScaled >> 64;
       // in the case of overflow check the sign of higher 64-bit half;
       // otherwise compare numbers with equalized exponents
-      return (x_high == xScaled) ? xScaled < y : x_high < 0;
+      return (xHigh == xScaled) ? xScaled < y : xHigh < 0;
     } else {
       long yScaled = scale(y, -ediff);
 
-      @DEC64 long y_high = yScaled >> 64;
-      return (y_high == yScaled) ? x < yScaled : y_high >= 0;
+      @DEC64 long yHigh = yScaled >> 64;
+      return (yHigh == yScaled) ? x < yScaled : yHigh >= 0;
     }
   }
 
