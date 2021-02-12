@@ -22,6 +22,30 @@ public final class Basic64 {
   // numbers are not allowed to use this exponent
   private static final byte ILLEGAL_EXPO = -128;
 
+  private static long power[] = {
+    1,
+    10,
+    100,
+    1_000,
+    10_000,
+    100_000,
+    1_000_000,
+    10_000_000,
+    100_000_000,
+    1_000_000_000,
+    10_000_000_000L,
+    100_000_000_000L,
+    1_000_000_000_000L,
+    10_000_000_000_000L,
+    100_000_000_000_000L,
+    1_000_000_000_000_000L,
+    10000000000000000L,
+    100000000000000000L,
+    1000000000000000000L,
+    //          (int64)10000000000000000000ULL,
+    0
+  };
+
   private Basic64() {}
 
   /**
@@ -223,18 +247,190 @@ public final class Basic64 {
     return of(coeff, (byte) (exponent(a) + exponent(b)));
   }
 
-  /**
-   * @param a
-   * @param b
-   * @return
-   */
-  public static @DEC64 long divide(@DEC64 long a, @DEC64 long b) {
+  public static @DEC64 long divide_naive(@DEC64 long a, @DEC64 long b) {
     if (isNaN(a) || isNaN(b)) return DEC64_NAN;
     if (coefficient(b) == 0) return DEC64_NAN;
 
     @DEC64 long recip = reciprocal(of(coefficient(b), 0));
 
     return multiply(of(coefficient(a), exponent(a) - exponent(b)), recip);
+  }
+
+  /*
+  static int __dec64_divide(dec64 x, dec64 y, int64* q, int* qexp)
+  {
+      static const unsigned char fasttab[][2] = {
+          {1, 0}, {5, 1}, {0, 0}, {25, 2}, {2, 1}, {0, 0}, {0, 0}, {125, 3}, {0, 0}, {1, 1},
+          {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {5, 2},
+          {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 2}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0},
+          {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {25, 3},
+          {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {2, 2},
+      };
+      // (x: dec64, y: dec64) returns quotient: dec64
+      // Divide a dec64 number by another.
+      // Begin unpacking the components.
+      int ex = (signed char)x;
+      int ey = (signed char)y;
+      x >>= 8;
+      y >>= 8;
+      if (x == 0 && ex != -128) {
+          *q = 0; *qexp = 0;
+          return 0; // 0/y ~ 0, even if y == 0 or y == nan
+      }
+      if ((ex == -128) | (ey == -128) | (y == 0)) {
+          *q = 0; *qexp = -128;
+          return -1;
+      }
+
+      // if both x and y are even then we can simplify the ratio lossless
+      int b0 = __builtin_ctzll(x);
+      int b1 = __builtin_ctzll(y);
+      b0 = min(b0, b1);
+      x >>= b0;
+      y >>= b0;
+
+      uint64 abs_y = (uint64)abs(y);
+      int scale = 0;
+      if (abs_y <= 50 && (scale=fasttab[abs_y-1][0]) != 0) {
+          // fast division by some popular small constants
+          // x/2 ~ (x*5)/10, x/5 ~ (x*2)/10, ...
+          // and division by a power of 10 is just shift of the exponent
+          *q = x*(y < 0 ? -scale : scale);
+          *qexp = ex - ey - fasttab[abs_y-1][1];
+          return 1;
+      }
+
+      // We want to get as many bits into the quotient as possible in order to capture
+      // enough significance. But if the quotient has more than 64 bits, then there
+      // will be a hardware fault. To avoid that, we compare the magnitudes of the
+      // dividend coefficient and divisor coefficient, and use that to scale the
+      // dividend to give us a good quotient.
+      int log2_y = 63 - __builtin_clzll(abs_y);
+      int log10_prescale = 0;
+
+      for(;;) {
+          uint64 abs_x = (uint64)abs(x);
+          int log2_x = 63 - __builtin_clzll(abs_x);
+
+          // Scale up the dividend to be approximately 58 bits longer than the divisor.
+          // Scaling uses factors of 10, so we must convert from a bit count to a digit
+          // count by multiplication by 77/256 (approximately LN2/LN10).
+          log10_prescale = (log2_y + 58 - log2_x)*77 >> 8;
+          if (log10_prescale <= 18) break;
+
+          // If the number of scaling digits is larger than 18, then we will have to
+          // scale in two steps: first prescaling the dividend to fill a register, and
+          // then repeating to fill a second register. This happens when the divisor
+          // coefficient is much larger than the dividend coefficient.
+
+          // we want 58 bits or so in the dividend
+          log10_prescale = (58 - log2_x)*77 >> 8;
+          x *= power[log10_prescale];
+          ex -= log10_prescale;
+      }
+
+      // Multiply the dividend by the scale factor, and divide that 128 bit result by
+      // the divisor. Because of the scaling, the quotient is guaranteed to use most
+      // of the 64 bits in r0, and never more. Reduce the final exponent by the number
+      // of digits scaled.
+      *q = (int64)((__int128)x*power[log10_prescale]/y);
+      *qexp = ex - ey - log10_prescale;
+      return 1;
+  }
+  */
+
+  public static @DEC64 long divide(@DEC64 long x, @DEC64 long y) {
+    final byte[][] fasttab = {
+      {1, 0}, {5, 1}, {0, 0}, {25, 2}, {2, 1}, {0, 0}, {0, 0}, {125, 3}, {0, 0}, {1, 1},
+      {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {5, 2},
+      {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 2}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0},
+      {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {25, 3},
+      {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {2, 2},
+    };
+    @DEC64 long q;
+    byte qexp;
+    int status;
+
+    // (x: dec64, y: dec64) returns quotient: dec64
+    // Divide a dec64 number by another.
+    // Begin unpacking the components.
+    int ex = (byte) x;
+    int ey = (byte) y;
+    x >>= 8;
+    y >>= 8;
+    if (x == 0 && ex != -128) {
+      q = 0;
+      qexp = 0;
+      status = 0; // 0/y ~ 0, even if y == 0 or y == nan
+      return status == 0 ? 0 : status < 0 ? DEC64_NULL : of(q, qexp);
+    }
+    if ((ex == -128) | (ey == -128) | (y == 0)) {
+      q = 0;
+      qexp = -128;
+      status = -1;
+      return status == 0 ? 0 : status < 0 ? DEC64_NULL : of(q, qexp);
+    }
+
+    // if both x and y are even then we can simplify the ratio lossless
+    int b0 = Long.numberOfLeadingZeros(x); // __builtin_ctzll(x);
+    int b1 = Long.numberOfLeadingZeros(y); // __builtin_ctzll(y);
+    b0 = min(b0, b1);
+    x >>= b0;
+    y >>= b0;
+
+    // FIXME UNSIGNED - should be uint64
+    long abs_y = (long) abs(y);
+    int scale = 0;
+    if (abs_y <= 50 && (scale = fasttab[(int) abs_y - 1][0]) != 0) {
+      // fast division by some popular small constants
+      // x/2 ~ (x*5)/10, x/5 ~ (x*2)/10, ...
+      // and division by a power of 10 is just shift of the exponent
+      q = x * (y < 0 ? -scale : scale);
+      qexp = (byte) (ex - ey - fasttab[(int) abs_y - 1][1]);
+      status = 1;
+      return status == 0 ? 0 : status < 0 ? DEC64_NULL : of(q, qexp);
+    }
+
+    // We want to get as many bits into the quotient as possible in order to capture
+    // enough significance. But if the quotient has more than 64 bits, then there
+    // will be a hardware fault. To avoid that, we compare the magnitudes of the
+    // dividend coefficient and divisor coefficient, and use that to scale the
+    // dividend to give us a good quotient.
+    int log2_y = 63 - Long.numberOfLeadingZeros(abs_y); // __builtin_clzll(abs_y);
+    int log10_prescale = 0;
+
+    for (; ; ) {
+      // FIXME UNSIGNED - should be uint64
+      long abs_x = (long) abs(x);
+      int log2_x = 63 - Long.numberOfLeadingZeros(abs_x); // __builtin_clzll(abs_x);
+
+      // Scale up the dividend to be approximately 58 bits longer than the divisor.
+      // Scaling uses factors of 10, so we must convert from a bit count to a digit
+      // count by multiplication by 77/256 (approximately LN2/LN10).
+      log10_prescale = (log2_y + 58 - log2_x) * 77 >> 8;
+      if (log10_prescale <= 18) break;
+
+      // If the number of scaling digits is larger than 18, then we will have to
+      // scale in two steps: first prescaling the dividend to fill a register, and
+      // then repeating to fill a second register. This happens when the divisor
+      // coefficient is much larger than the dividend coefficient.
+
+      // we want 58 bits or so in the dividend
+      log10_prescale = (58 - log2_x) * 77 >> 8;
+      x *= power[log10_prescale];
+      ex -= log10_prescale;
+    }
+
+    // Multiply the dividend by the scale factor, and divide that 128 bit result by
+    // the divisor. Because of the scaling, the quotient is guaranteed to use most
+    // of the 64 bits in r0, and never more. Reduce the final exponent by the number
+    // of digits scaled.
+    // FIXME 128-bit multiplication
+    q = (long) (x * power[log10_prescale] / y); // (__int128)
+    qexp = (byte) (ex - ey - log10_prescale);
+
+    status = 1;
+    return status == 0 ? 0 : status < 0 ? DEC64_NULL : of(q, qexp);
   }
 
   public static @DEC64 long reciprocal(@DEC64 long r) {
