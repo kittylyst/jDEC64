@@ -19,8 +19,8 @@ public final class Basic64 {
 
   private static final byte MAX_DIGITS = 17;
 
-  // numbers are not allowed to use this exponent
-  private static final byte ILLEGAL_EXPO = -128;
+  /** This value should not be used as an exponent. */
+  private static final byte ILLEGAL_EXPONENT = Byte.MIN_VALUE;
 
   private Basic64() {}
 
@@ -63,12 +63,16 @@ public final class Basic64 {
   }
 
   public static @DEC64 long of(long coeff, long exponent) {
-    if (exponent > 127 || exponent < -127) return DEC64_NAN;
+    if (exponent > 127 || exponent < -127) {
+      return DEC64_NAN;
+    }
     return of(coeff, (byte) exponent);
   }
 
   public static @DEC64 long of(long coeff, byte exponent) {
-    if (overflow(coeff)) return DEC64_NAN;
+    if (overflow(coeff)) {
+      return DEC64_NAN;
+    }
     return (coeff << 8) | exponentAsLong(exponent);
   }
 
@@ -81,9 +85,13 @@ public final class Basic64 {
   }
 
   public static @DEC64 long canonical(@DEC64 long number) {
-    if (isNaN(number)) return DEC64_NAN;
+    if (isNaN(number)) {
+      return DEC64_NAN;
+    }
     byte exp = exponent(number);
-    if (exp == 127 || exp == 0) return number;
+    if (exp == 127 || exp == 0) {
+      return number;
+    }
 
     long out = number;
     long coeff = coefficient(number);
@@ -119,7 +127,9 @@ public final class Basic64 {
   }
 
   public static boolean equals64(@DEC64 long a, @DEC64 long b) {
-    if (isNaN(a) || isNaN(b)) return false; // NaN != NaN
+    if (isNaN(a) || isNaN(b)) {
+      return false; // NaN != NaN
+    }
     byte expa = exponent(a);
     byte expb = exponent(b);
     if (expa == expb) {
@@ -151,7 +161,9 @@ public final class Basic64 {
   }
 
   public static @DEC64 long add(@DEC64 long a, @DEC64 long b) {
-    if (isNaN(a) || isNaN(b)) return DEC64_NAN;
+    if (isNaN(a) || isNaN(b)) {
+      return DEC64_NAN;
+    }
     byte expa = exponent(a);
     byte expb = exponent(b);
     if (expa == expb) {
@@ -189,14 +201,18 @@ public final class Basic64 {
   }
 
   public static @DEC64 long subtract(@DEC64 long a, @DEC64 long b) {
-    if (isNaN(a) || isNaN(b)) return DEC64_NAN;
+    if (isNaN(a) || isNaN(b)) {
+      return DEC64_NAN;
+    }
     a = canonical(a);
     b = canonical(b);
     byte expa = exponent(a);
     byte expb = exponent(b);
     if (expa == expb) {
       long coeff = coefficient(a) - coefficient(b);
-      if (overflow(coeff)) return DEC64_NAN;
+      if (overflow(coeff)) {
+        return DEC64_NAN;
+      }
       return of(coeff, expa);
     }
     if (expa > expb) {
@@ -217,9 +233,13 @@ public final class Basic64 {
   }
 
   public static @DEC64 long multiply(@DEC64 long a, @DEC64 long b) {
-    if (isNaN(a) || isNaN(b)) return DEC64_NAN;
+    if (isNaN(a) || isNaN(b)) {
+      return DEC64_NAN;
+    }
     final long coeff = coefficient(a) * coefficient(b);
-    if (overflow(coeff)) return DEC64_NAN;
+    if (overflow(coeff)) {
+      return DEC64_NAN;
+    }
     return of(coeff, (byte) (exponent(a) + exponent(b)));
   }
 
@@ -229,8 +249,12 @@ public final class Basic64 {
    * @return
    */
   public static @DEC64 long divide(@DEC64 long a, @DEC64 long b) {
-    if (isNaN(a) || isNaN(b)) return DEC64_NAN;
-    if (coefficient(b) == 0) return DEC64_NAN;
+    if (isNaN(a) || isNaN(b)) {
+      return DEC64_NAN;
+    }
+    if (coefficient(b) == 0) {
+      return DEC64_NAN;
+    }
 
     @DEC64 long recip = reciprocal(of(coefficient(b), 0));
 
@@ -238,10 +262,14 @@ public final class Basic64 {
   }
 
   public static @DEC64 long reciprocal(@DEC64 long r) {
-    if (isNaN(r) || coefficient(r) == 0) return DEC64_NAN;
+    if (isNaN(r) || coefficient(r) == 0) {
+      return DEC64_NAN;
+    }
 
     byte digits = digits(r);
-    if (digits < 1) return DEC64_NAN;
+    if (digits < 1) {
+      return DEC64_NAN;
+    }
 
     byte exp = exponent(r);
     long coeff = coefficient(r);
@@ -274,10 +302,16 @@ public final class Basic64 {
   }
 
   public static @DEC64 long abs(@DEC64 long number) {
-    if (isNaN(number)) return DEC64_NAN;
+    if (isNaN(number)) {
+      return DEC64_NAN;
+    }
     @DEC64 long coeff = coefficient(number);
-    if (coeff >= 0) return number;
-    if (coeff > DEC64_MIN_COEFFICIENT) return of(-coeff, exponent(number));
+    if (coeff >= 0) {
+      return number;
+    }
+    if (coeff > DEC64_MIN_COEFFICIENT) {
+      return of(-coeff, exponent(number));
+    }
     return DEC64_NAN;
   }
 
@@ -291,10 +325,13 @@ public final class Basic64 {
       return minuend;
     }
     return subtract(minuend, DEC64_ONE);
-  } /* decrementation */
+  }
 
+  /* decrementation */
   public static @DEC64 long half(@DEC64 long dividend) {
-    if (isNaN(dividend)) return DEC64_NAN;
+    if (isNaN(dividend)) {
+      return DEC64_NAN;
+    }
     long coeff = coefficient(dividend);
     byte exp = exponent(dividend);
     // FIXME If coeff is large, this might not work
@@ -302,8 +339,9 @@ public final class Basic64 {
       return of(coeff / 2L, exp);
     }
     return of(coeff * 5, --exp);
-  } /* quotient */
+  }
 
+  /* quotient */
   public static @DEC64 long inc(@DEC64 long augend) {
     augend = canonical(augend);
     if (isBasic(augend)) {
@@ -318,50 +356,107 @@ public final class Basic64 {
   }
 
   public static @DEC64 long modulo(@DEC64 long dividend, @DEC64 long divisor) {
-    if (coefficient(divisor) == 0) return DEC64_NAN;
+    if (coefficient(divisor) == 0) {
+      return DEC64_NAN;
+    }
 
     // Modulo. It produces the same result as
     return subtract(dividend, multiply(integer_divide(dividend, divisor), divisor));
-  } /* modulation */
+  }
 
+  /* modulation */
   public static @DEC64 long neg(@DEC64 long number) {
-    if (isNaN(number)) return DEC64_NAN;
+    if (isNaN(number)) {
+      return DEC64_NAN;
+    }
     @DEC64 long coeff = coefficient(number);
-    if (coeff > DEC64_MIN_COEFFICIENT) return of(-coeff, exponent(number));
+    if (coeff > DEC64_MIN_COEFFICIENT) {
+      return of(-coeff, exponent(number));
+    }
     return DEC64_NAN;
   }
 
   ////////////////////////////////////////////////////////
   public static long normal(long number) {
     return DEC64_NAN;
-  } /* normalization */
+  }
 
+  /* normalization */
   public static long not(long value) {
     return DEC64_NAN;
-  } /* notation */
+  }
 
+  /* notation */
   public static long round(long number, long place) {
     return 0;
-  } /* quantization */
+  }
 
+  /* quantization */
   public static long signum(long number) {
     return DEC64_NAN;
-  } /* signature */
+  }
 
-  public static @DEC64 long floor(@DEC64 long dividend) {
-    return DEC64_NAN;
-  } /* integer */
+  /* signature */
+  public static @DEC64 long ceiling(@DEC64 long number) {
+    return largestInt(number, 1);
+  }
+
+  public static @DEC64 long floor(@DEC64 long number) {
+    return largestInt(number, -1);
+  }
+
+  /**
+   * Produces the largest integer that is less than or equal to 'number' (roundDir == -1) or greater
+   * than or equal to 'number' (roundDir == 1). In the result, the exponent will be greater than or
+   * equal to zero unless it is nan. Numbers with positive exponents will not be modified, even if
+   * the numbers are outside of the safe integer range.
+   *
+   * @param number Dec64 number
+   * @param roundDir rounding direction
+   * @return rounded number
+   */
+  private static @DEC64 long largestInt(@DEC64 long number, int roundDir) {
+    if (isNaN(number)) {
+      return DEC64_NAN;
+    }
+    int e = exponent(number);
+    @DEC64 long x = number >> 8;
+    if (x == 0) {
+      return 0;
+    }
+    if (e >= 0) {
+      return number;
+    }
+
+    e = -e;
+    long rem;
+    if (e < 17) {
+      double p = Math.pow(10, e);
+      long scaled = (long) (x / p);
+      rem = (long) (x - scaled * p);
+      if (rem == 0) {
+        return scaled << 8;
+      }
+      x = scaled;
+    } else {
+      // deal with a micro number
+      rem = x;
+      x = 0;
+    }
+    int multiplier = ((rem ^ roundDir) >= 0) ? 1 : 0;
+    int delta = multiplier * roundDir;
+    return (x + delta) << 8;
+  }
 
   public static @DEC64 long integer_divide(@DEC64 long dividend, @DEC64 long divisor) {
-    if (coefficient(divisor) == 0) return DEC64_NAN;
+    if (coefficient(divisor) == 0) {
+      return DEC64_NAN;
+    }
     // FIXME
     return 0;
-  } /* quotient */
+  }
 
-  public static @DEC64 long ceiling(@DEC64 long number) {
-    return DEC64_NAN;
-  } /* integer */
-
+  /* quotient */
   /**
    * Compare two dec64 numbers. If the first is less than the second, return true, otherwise return
    * false. Any nan value is greater than any number value.
@@ -376,10 +471,10 @@ public final class Basic64 {
 
     // If the exponents are the same, then do a simple compare.
     if (ex == ey) {
-      return ex != ILLEGAL_EXPO && (coefficient(x) < coefficient(y));
+      return ex != ILLEGAL_EXPONENT && (coefficient(x) < coefficient(y));
     }
 
-    if (ex == ILLEGAL_EXPO || ey == ILLEGAL_EXPO) {
+    if (isNaN(ex) || isNaN(ey)) {
       return false;
     }
 
@@ -389,17 +484,17 @@ public final class Basic64 {
     int ediff = ex - ey;
     if (ediff > 0) {
       // make them conform before compare
-      long x_scaled = scale(x, ediff);
+      long xScaled = scale(x, ediff);
 
-      @DEC64 long x_high = x_scaled >> 64;
+      @DEC64 long xHigh = xScaled >> 64;
       // in the case of overflow check the sign of higher 64-bit half;
       // otherwise compare numbers with equalized exponents
-      return (x_high == x_scaled) ? x_scaled < y : x_high < 0;
+      return (xHigh == xScaled) ? xScaled < y : xHigh < 0;
     } else {
-      long y_scaled = scale(y, -ediff);
+      long yScaled = scale(y, -ediff);
 
-      @DEC64 long y_high = y_scaled >> 64;
-      return (y_high == y_scaled) ? x < y_scaled : y_high >= 0;
+      @DEC64 long yHigh = yScaled >> 64;
+      return (yHigh == yScaled) ? x < yScaled : yHigh >= 0;
     }
   }
 
