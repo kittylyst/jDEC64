@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /** @author kittylyst */
-class Math64Test {
+public class Math64Test {
 
   private static @DEC64 long nannan;
   private static @DEC64 long zip;

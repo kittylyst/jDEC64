@@ -400,11 +400,12 @@ public final class Basic64 {
     }
 
     // if both x and y are even then we can simplify the ratio lossless
-    int b0 = Long.numberOfLeadingZeros(x); // __builtin_ctzll(x);
-    int b1 = Long.numberOfLeadingZeros(y); // __builtin_ctzll(y);
+    int b0 = Long.numberOfTrailingZeros(x); // __builtin_ctzll(x);
+    int b1 = Long.numberOfTrailingZeros(y); // __builtin_ctzll(y);
     b0 = min(b0, b1);
     x >>= b0;
     y >>= b0;
+    //    System.out.println(b0 + " " + x + " " + y);
 
     // FIXME UNSIGNED - should be uint64
     long abs_y = (long) abs(y);
