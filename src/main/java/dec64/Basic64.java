@@ -97,7 +97,186 @@ public final class Basic64 {
     if (overflow(coeff)) {
       return DEC64_NAN;
     }
+    if (coeff == 0) {
+      return DEC64_ZERO;
+    }
+    //    return pack(coeff, exponent);
     return (coeff << 8) | exponentAsLong(exponent);
+  }
+
+  // FIXME
+  // Code from Tom
+  // This impl seems to get stuck in an infinite loop for some of the basic tests
+  // Possibly because of incompatibilities between the pack impl and the divide impl
+  public static @DEC64 long pack(long coeff, long exponent) {
+    final long ultimateCoefficient = 36028797018963968L;
+    final long eightOverTen = -3689348814741910323L;
+
+    for (; ; ) {
+      if (exponent > 127) {
+        return packDecrease(coeff, exponent);
+      }
+
+      // mov     r10,r0          ; r10 is the coefficient
+      // mov     r1,3602879701896396800 ; the ultimate coefficient * 100
+      // not     r10             ; r10 is -coefficient
+
+      // test    r10,r10         ; look at the sign bit
+      // cmovs   r10,r0          ; r10 is the absolute value of the coefficient
+      final long absCoefficient = Math.abs(coeff);
+
+      // cmp     r10,r1          ; compare with the actual coefficient
+      // jae     pack_large      ; deal with the very large coefficient
+      if (absCoefficient >= coeff) {
+        // mov     r1,r0           ; r1 is the coefficient
+        // sar     r1,63           ; r1 is -1 if negative, or 0 if positive
+        final long sign = coeff >>= 63;
+
+        // mov     r9,r1           ; r9 is -1 or 0
+        // xor     r0,r1           ; complement the coefficient if negative
+        coeff ^= sign;
+
+        // and     r9,1            ; r9 is 1 or 0
+        final long absSign = sign & 1;
+
+        // add     r0,r9           ; r0 is absolute value of coefficient
+        coeff += absSign;
+
+        // add     r8,1            ; add 1 to the exponent
+        exponent++;
+
+        // FIXME the multiplication below yields a 128-bit result in X86-64 assembly,
+        //       high bits stored in r2, low bits stored in r0. We lean on multiplyHigh (Java 9+).
+        //
+        // mov     r11,eight_over_ten ; magic number
+        // mul     r11             ; multiply abs(coefficient) by magic number
+        // mov     r0,r2           ; r0 is the product shift 64 bits
+        coeff = Math.multiplyHigh(coeff, eightOverTen);
+
+        // shr     r0,3            ; r0 is divided by 8: the abs(coefficient) / 10
+        // xor     r0,r1           ; complement the coefficient if it was negative
+        // add     r0,r9           ; coefficient's sign is restored
+        coeff >>>= 3;
+        coeff ^= sign;
+        coeff += absSign;
+
+        // jmp     pack            ; start over
+        continue;
+      }
+
+      // xor     r11,r11         ; r11 is zero
+      long n = 0;
+
+      // mov     r1,36028797018963967 ; the ultimate coefficient - 1
+      // mov     r9,-127         ; r9 is the ultimate exponent
+      // cmp     r1,r10          ; compare with the actual coefficient
+      // adc     r11,0           ; add 1 to r11 if 1 digit too big
+      if (absCoefficient >= ultimateCoefficient - 1) {
+        n++;
+      }
+
+      // cmp     r1,r10          ; compare with the actual coefficient
+      // adc     r11,0           ; add 1 to r11 if 2 digits too big
+      if (absCoefficient >= ultimateCoefficient * 10 - 1) {
+        n++;
+      }
+
+      // mov     r1,360287970189639679 ; the ultimate coefficient * 10 - 1
+      // sub     r9,r8           ; r9 is the difference from the actual exponent
+      final long expDiff = -127 - exponent;
+
+      // cmp     r9,r11          ; which excess is larger?
+      // cmovl   r9,r11          ; take the max
+      // test    r9,r9           ; if neither was zero
+      // jnz     pack_increase   ; then increase the exponent by the excess
+      final long expMax = Math.max(expDiff, n);
+      if (expMax != 0) {
+        // cmp     r9,20           ; is the difference more than 20?
+        // jae     return_zero     ; if so, the result is zero (rare)
+        if (expMax >= 20) {
+          return DEC64_ZERO;
+        }
+
+        // mov     r10,power
+        // mov     r10,[r10][r9*8] ; r10 is 10^r9
+        final long pow = power[(int) expMax];
+
+        // mov     r11,r10         ; r11 is the power of ten
+        // neg     r11             ; r11 is the negation of the power of ten
+        long negPow = -pow;
+
+        // FIXME this isn't quite right
+        // test    r0,r0           ; examine the sign of the coefficient
+        // cmovns  r11,r10         ; r11 has the sign of the coefficient
+        // sar     r11,1           ; r11 is half the signed power of ten
+        final long temp = negPow >> 1;
+
+        // add     r0,r11          ; r0 is the coefficient plus the rounding fudge
+        coeff += temp;
+
+        // FIXME expressing this in Java will probably require some trickery similar to
+        // Math.multiplyHigh()
+        // cqo                     ; sign extend r0 into r2
+        // idiv    r10             ; divide by the power of ten
+        coeff /= pow;
+
+        // add     r8,r9           ; increase the exponent
+        exponent += expMax;
+
+        // jmp     pack            ; start over
+        continue;
+      }
+
+      // shl     r0,8            ; shift the exponent into position
+      // cmovz   r8,r0           ; if the coefficient is zero, also zero the exp
+      // movzx   r8,r8_b         ; zero out all but the bottom 8 bits of the exp
+      // or      r0,r8           ; mix in the exponent
+      // ret                     ; whew
+      return packSimple(coeff, exponent);
+    }
+  }
+
+  private static @DEC64 long packDecrease(long coeff, long exponent) {
+    // exponent represents 10^N, so for each N > 127 multiply coeff by 10.
+    // if we detect an overflow while we're multiplying the best we can do is return a NaN.
+    do {
+      final long temp = coeff * 10;
+      if (temp / 10 != coeff) {
+        // overflow
+        return DEC64_NAN;
+      }
+      coeff = temp;
+      exponent--;
+    } while (exponent > 127);
+
+    //
+    // FIXME here I **think** we're just checking that we have room for the coming left shift. extra
+    // bit is
+    //       likely because the top bit of the coeff is reserved somehow. Need to check the
+    // reference, but zzz.
+    //
+    //       mov r9,$coeff   ; r9 is the coefficient
+    //       sar r9,56       ; r9 is top 8 bits of the coefficient
+    //       adc r9,0        ; add the ninth bit
+    //       jnz return_null ; the number is still too large
+    //
+    if ((coeff & 0xff80000000000000L) != 0) {
+      return DEC64_NAN;
+    }
+
+    return packSimple(coeff, exponent);
+  }
+
+  private static @DEC64 long packSimple(long coeff, long exponent) {
+    // make room for the exponent
+    coeff <<= 8;
+    if (coeff == 0) {
+      // think this is just a bit of hygiene: coeff is zero and 0 * 10^N == 0, so clear the
+      // exponent.
+      exponent = 0;
+    }
+    final long result = coeff | (((byte) exponent) & 0xffL);
+    return result;
   }
 
   public static @DEC64 long level(@DEC64 long number) {
@@ -147,7 +326,7 @@ public final class Basic64 {
   }
 
   public static boolean isZero(@DEC64 long number) {
-    return coefficient(number) == DEC64_ZERO;
+    return !isNaN(number) && coefficient(number) == DEC64_ZERO;
   }
 
   public static boolean equals64(@DEC64 long a, @DEC64 long b) {
@@ -260,6 +439,9 @@ public final class Basic64 {
     if (isNaN(a) || isNaN(b)) {
       return DEC64_NAN;
     }
+    if (isZero(a) || isZero(b)) {
+      return DEC64_ZERO;
+    }
     final long coeff = coefficient(a) * coefficient(b);
     if (overflow(coeff)) {
       return DEC64_NAN;
@@ -368,6 +550,13 @@ public final class Basic64 {
   */
 
   public static @DEC64 long divide(@DEC64 long x, @DEC64 long y) {
+    if (isNaN(x) || isNaN(y) || coefficient(y) == 0) {
+      return DEC64_NAN;
+    }
+    if (coefficient(x) == 0) {
+      return DEC64_ZERO;
+    }
+
     final byte[][] fasttab = {
       {1, 0}, {5, 1}, {0, 0}, {25, 2}, {2, 1}, {0, 0}, {0, 0}, {125, 3}, {0, 0}, {1, 1},
       {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {5, 2},
