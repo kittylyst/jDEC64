@@ -147,7 +147,7 @@ public final class Basic64 {
   }
 
   public static boolean isZero(@DEC64 long number) {
-    return coefficient(number) == DEC64_ZERO;
+    return !isNaN(number) && coefficient(number) == DEC64_ZERO;
   }
 
   public static boolean equals64(@DEC64 long a, @DEC64 long b) {
@@ -260,6 +260,9 @@ public final class Basic64 {
     if (isNaN(a) || isNaN(b)) {
       return DEC64_NAN;
     }
+    if (isZero(a) || isZero(b)) {
+      return DEC64_ZERO;
+    }
     final long coeff = coefficient(a) * coefficient(b);
     if (overflow(coeff)) {
       return DEC64_NAN;
@@ -368,6 +371,13 @@ public final class Basic64 {
   */
 
   public static @DEC64 long divide(@DEC64 long x, @DEC64 long y) {
+    if (isNaN(x) || isNaN(y) || coefficient(y) == 0) {
+      return DEC64_NAN;
+    }
+    if (coefficient(x) == 0) {
+      return DEC64_ZERO;
+    }
+
     final byte[][] fasttab = {
       {1, 0}, {5, 1}, {0, 0}, {25, 2}, {2, 1}, {0, 0}, {0, 0}, {125, 3}, {0, 0}, {1, 1},
       {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {5, 2},
