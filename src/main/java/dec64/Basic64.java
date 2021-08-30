@@ -108,6 +108,13 @@ public final class Basic64 {
   // Code from Tom
   // This impl seems to get stuck in an infinite loop for some of the basic tests
   // Possibly because of incompatibilities between the pack impl and the divide impl
+
+  /**
+   *
+   * @param coeff      - a pre-shifted 56 bit signed integer
+   * @param exponent   - a long containing an empty 56 bits followed by a signed 8-bit integer
+   * @return
+   */
   public static @DEC64 long pack(long coeff, long exponent) {
     final long ultimateCoefficient = 36028797018963968L;
     final long eightOverTen = -3689348814741910323L;
